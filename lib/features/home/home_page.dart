@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/app.dart';
 import 'package:sound_box/features/home/widgets/dot_matrix_clock.dart';
@@ -130,8 +132,6 @@ class _PortraitLayout extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Header(theme: theme),
-        const SizedBox(height: 16),
         Expanded(
           child: Column(
             children: [
@@ -145,15 +145,6 @@ class _PortraitLayout extends StatelessWidget {
                   sounds: featuredSounds,
                   fallback: fallbackIcons,
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '白噪音 · 放松身心 · 专注睡眠',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.white70,
-                  letterSpacing: 1.5,
-                ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -197,11 +188,6 @@ class _LandscapeLayout extends StatelessWidget {
                 children: [
                   _SidePill(
                     height: pillHeight,
-                    child: Icon(Icons.dark_mode_rounded, color: Colors.white70),
-                  ),
-                  const SizedBox(height: gap),
-                  _SidePill(
-                    height: pillHeight,
                     onTap: onPrimaryAction,
                     child: const Icon(
                       Icons.graphic_eq,
@@ -224,31 +210,8 @@ class _LandscapeLayout extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                '白噪音收音机',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: Colors.white70,
-                  letterSpacing: 2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'v1.0',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.white38,
-                ),
-              ),
-              const SizedBox(height: 16),
               Expanded(
                 child: _DisplaySurface(now: now, minRows: 10, minColumns: 28),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '白噪音 · 放松身心 · 专注睡眠',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: Colors.white60,
-                  letterSpacing: 1.5,
-                ),
               ),
             ],
           ),
@@ -260,43 +223,6 @@ class _LandscapeLayout extends StatelessWidget {
             fallback: fallbackIcons,
             crossAxisCount: 2,
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.theme});
-
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _SidePill(
-          width: 60,
-          height: 90,
-          child: Icon(Icons.dark_mode_rounded, color: Colors.white70, size: 32),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '白噪音收音机',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: Colors.white70,
-                letterSpacing: 1,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'v1.0',
-              style: theme.textTheme.bodySmall?.copyWith(color: Colors.white38),
-            ),
-          ],
         ),
       ],
     );
@@ -385,43 +311,40 @@ class _QuickSoundGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final entries = sounds.isEmpty
-        ? fallback.map((icon) => _QuickSoundEntry(icon: icon)).toList()
-        : sounds
-              .map(
-                (sound) =>
-                    _QuickSoundEntry(icon: sound.icon, label: sound.label),
-              )
-              .toList();
+    final icons = sounds.isEmpty
+        ? fallback
+        : sounds.map((sound) => sound.icon).toList();
 
-    return GridView.count(
-      crossAxisCount: crossAxisCount,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      children: entries
-          .map(
-            (entry) => _SquareButton(
-              iconOnly: entry.label == null,
-              icon: entry.icon,
-              label: entry.label,
-              onTap: () {},
-            ),
-          )
-          .toList(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const targetSize = 72.0;
+        const gap = 12.0;
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : 320.0;
+        final computedCrossAxisCount = (availableWidth / (targetSize + gap))
+            .floor()
+            .clamp(crossAxisCount, 6);
+
+        return GridView.count(
+          crossAxisCount: computedCrossAxisCount,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 1,
+          mainAxisSpacing: gap,
+          crossAxisSpacing: gap,
+          children: icons
+              .map(
+                (icon) =>
+                    _SquareButton(iconOnly: true, icon: icon, onTap: () {}),
+              )
+              .toList(),
+        );
+      },
     );
   }
 }
 
-class _QuickSoundEntry {
-  const _QuickSoundEntry({required this.icon, this.label});
-
-  final IconData icon;
-  final String? label;
-}
-
-class _SquareButton extends StatelessWidget {
+class _SquareButton extends StatefulWidget {
   const _SquareButton({
     this.icon,
     this.label,
@@ -435,45 +358,158 @@ class _SquareButton extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<_SquareButton> createState() => _SquareButtonState();
+}
+
+class _SquareButtonState extends State<_SquareButton> {
+  static final _GlobalBreathTicker _breathSignal = _GlobalBreathTicker.instance;
+  VoidCallback? _breathListener;
+  bool _isPressed = false;
+  bool _isActive = false;
+  double _breathValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _breathValue = _breathSignal.value;
+    _breathListener = () {
+      if (!_isActive) return;
+      setState(() {
+        _breathValue = _breathSignal.value;
+      });
+    };
+    _breathSignal.addListener(_breathListener!);
+  }
+
+  @override
+  void dispose() {
+    if (_breathListener != null) {
+      _breathSignal.removeListener(_breathListener!);
+    }
+    super.dispose();
+  }
+
+  void _handleTap() {
+    if (widget.iconOnly) {
+      setState(() {
+        _isActive = !_isActive;
+        _breathValue = _breathSignal.value;
+      });
+    }
+    widget.onTap?.call();
+  }
+
+  void _handleTapDown(TapDownDetails _) {
+    setState(() => _isPressed = true);
+  }
+
+  void _handleTapEnd([TapUpDetails? _]) {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  Color _iconColor(double glowStrength) {
+    if (!widget.iconOnly) {
+      return Colors.white;
+    }
+    if (!_isActive) {
+      return Colors.black;
+    }
+    const glow = Color(0xFFFFF4C9);
+    return Color.lerp(Colors.black, glow, glowStrength.clamp(0, 1)) ??
+        Colors.black;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final double glowStrength = widget.iconOnly && _isActive ? _breathValue : 0;
+    final iconColor = _iconColor(glowStrength);
+    final bool showText = !widget.iconOnly && widget.label != null;
+    final double elevation = _isPressed ? 4 : 10;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: _handleTap,
+        onTapDown: _handleTapDown,
+        onTapCancel: _handleTapEnd,
+        onTapUp: _handleTapEnd,
         borderRadius: BorderRadius.circular(24),
-        child: Ink(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
           decoration: BoxDecoration(
-            color: const Color(0xFF1C2130),
             borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF2E3548), Color(0xFF171C28)],
+            ),
             border: Border.all(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: Colors.black.withValues(alpha: 0.55),
               width: 2,
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Colors.black54,
-                blurRadius: 18,
-                offset: Offset(0, 10),
+                color: Colors.black.withValues(alpha: 0.7),
+                offset: Offset(0, elevation),
+                blurRadius: elevation * 1.8,
+                spreadRadius: -2,
+              ),
+              BoxShadow(
+                color: const Color(0x3329394D),
+                offset: const Offset(-2, -2),
+                blurRadius: 8,
               ),
             ],
           ),
-          child: Center(
-            child: iconOnly
-                ? Icon(icon, color: Colors.white, size: 28)
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(icon, color: Colors.white, size: 28),
-                      const SizedBox(height: 8),
-                      Text(
-                        label ?? '',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: _isPressed
+                    ? const [Color(0xFF1A1F2C), Color(0xFF131722)]
+                    : const [Color(0xFF232838), Color(0xFF171C28)],
+              ),
+              border: Border.all(color: Colors.white.withOpacity(0.04)),
+            ),
+            child: Center(
+              child: widget.iconOnly
+                  ? _BreathingIcon(
+                      icon: widget.icon,
+                      color: iconColor,
+                      size: 30,
+                      intensity: glowStrength,
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _BreathingIcon(
+                          icon: widget.icon,
+                          color: iconColor,
+                          size: 28,
+                          intensity: glowStrength,
                         ),
-                      ),
-                    ],
-                  ),
+                        if (showText) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.label ?? '',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+            ),
           ),
         ),
       ),
@@ -511,5 +547,80 @@ class _SidePill extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _BreathingIcon extends StatelessWidget {
+  const _BreathingIcon({
+    required this.icon,
+    required this.color,
+    required this.size,
+    required this.intensity,
+  });
+
+  final IconData? icon;
+  final Color color;
+  final double size;
+  final double intensity;
+
+  @override
+  Widget build(BuildContext context) {
+    final double glow = intensity.clamp(0, 1);
+    final double blur = 8 + 12 * glow;
+    final double spread = 0.5 + 2 * glow;
+    final double hazeSize = size;
+    final Color hazeColor = const Color(
+      0xFFFFF4C9,
+    ).withOpacity(0.05 + 0.25 * glow);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (glow > 0)
+          Container(
+            width: hazeSize,
+            height: hazeSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: hazeColor,
+                  blurRadius: blur,
+                  spreadRadius: spread,
+                ),
+              ],
+              gradient: RadialGradient(
+                colors: [
+                  hazeColor,
+                  hazeColor.withOpacity(0.04),
+                  Colors.transparent,
+                ],
+                stops: const [0, 0.85, 1],
+              ),
+            ),
+          ),
+        Icon(icon, color: color, size: size),
+      ],
+    );
+  }
+}
+
+class _GlobalBreathTicker extends ChangeNotifier {
+  _GlobalBreathTicker._() {
+    _ticker = Ticker(_handleTick)..start();
+  }
+
+  static final _GlobalBreathTicker instance = _GlobalBreathTicker._();
+
+  static const int _periodMs = 2400;
+  late final Ticker _ticker;
+  double value = 0;
+
+  void _handleTick(Duration elapsed) {
+    final int ms = elapsed.inMilliseconds % _periodMs;
+    final double progress = ms / _periodMs;
+    final double mirrored = progress <= 0.5 ? progress * 2 : (1 - progress) * 2;
+    value = Curves.easeInOut.transform(mirrored);
+    notifyListeners();
   }
 }
