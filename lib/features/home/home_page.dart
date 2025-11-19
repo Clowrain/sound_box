@@ -607,7 +607,7 @@ class _BreathingIcon extends StatelessWidget {
 
 class _GlobalBreathTicker extends ChangeNotifier {
   _GlobalBreathTicker._() {
-    _ticker = Ticker(_handleTick)..start();
+    _ticker = Ticker(_handleTick);
   }
 
   static final _GlobalBreathTicker instance = _GlobalBreathTicker._();
@@ -615,6 +615,23 @@ class _GlobalBreathTicker extends ChangeNotifier {
   static const int _periodMs = 2400;
   late final Ticker _ticker;
   double value = 0;
+
+  @override
+  void addListener(VoidCallback listener) {
+    final hadListeners = hasListeners;
+    super.addListener(listener);
+    if (!hadListeners && !_ticker.isActive) {
+      _ticker.start();
+    }
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    super.removeListener(listener);
+    if (!hasListeners) {
+      _ticker.stop();
+    }
+  }
 
   void _handleTick(Duration elapsed) {
     final int ms = elapsed.inMilliseconds % _periodMs;

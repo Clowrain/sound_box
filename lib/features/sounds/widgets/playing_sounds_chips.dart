@@ -38,7 +38,7 @@ class PlayingSoundsChips extends StatelessWidget {
                     (sound) => Chip(
                       labelPadding: const EdgeInsets.only(left: 2, right: 4),
                       avatar: Icon(sound.icon, size: 16, color: Colors.white),
-                      label: Text(sound.label),
+                      label: Text(sound.name),
                       backgroundColor: Colors.white.withValues(alpha: 0.08),
                       side: BorderSide(
                         color: Colors.white.withValues(alpha: 0.25),

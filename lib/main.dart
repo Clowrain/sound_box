@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sound_box/app.dart';
+import 'package:sound_box/data/sound_presets.dart';
 
-void main() {
-  runApp(const SoundBoxApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final sounds = await loadWhiteNoiseSounds();
+  runApp(SoundBoxApp(initialSounds: sounds));
 }

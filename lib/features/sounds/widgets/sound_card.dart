@@ -9,7 +9,8 @@ class SoundCard extends StatelessWidget {
     required this.isPlaying,
     required this.onToggle,
     required this.onVolumeChanged,
-    this.reorderHandle,
+    required this.isPinned,
+    required this.onTogglePin,
   });
 
   final WhiteNoiseSound sound;
@@ -17,7 +18,8 @@ class SoundCard extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onToggle;
   final ValueChanged<double> onVolumeChanged;
-  final Widget? reorderHandle;
+  final bool isPinned;
+  final VoidCallback onTogglePin;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class SoundCard extends StatelessWidget {
         : isPlaying
         ? Icons.pause_rounded
         : Icons.play_arrow_rounded;
+    final pinIcon = isPinned ? Icons.push_pin : Icons.push_pin_outlined;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -52,7 +55,19 @@ class SoundCard extends StatelessWidget {
                 Icon(sound.icon, color: Colors.white, size: 28),
                 const SizedBox(width: 12),
                 Flexible(
-                  child: Text(sound.label, style: theme.textTheme.titleMedium),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(sound.name, style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      Text(
+                        _buildMetaLabel(sound),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -73,14 +88,15 @@ class SoundCard extends StatelessWidget {
             muted: locked,
           ),
           const SizedBox(width: 8),
-          reorderHandle ??
-              const SoundCardIconButton(
-                icon: Icons.drag_indicator,
-                muted: true,
-              ),
+          SoundCardIconButton(icon: pinIcon, onPressed: onTogglePin),
         ],
       ),
     );
+  }
+
+  String _buildMetaLabel(WhiteNoiseSound sound) {
+    final variantCount = sound.variants.length;
+    return variantCount > 0 ? '$variantCount 种音色' : '';
   }
 }
 

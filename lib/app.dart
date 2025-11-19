@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sound_box/data/sound_presets.dart';
 import 'package:sound_box/features/home/home_page.dart';
 import 'package:sound_box/features/sounds/sounds_page.dart';
+import 'package:sound_box/models/white_noise_sound.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 class SoundRoutes {
@@ -11,7 +11,9 @@ class SoundRoutes {
 }
 
 class SoundBoxApp extends StatelessWidget {
-  const SoundBoxApp({super.key});
+  const SoundBoxApp({super.key, required this.initialSounds});
+
+  final List<WhiteNoiseSound> initialSounds;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class SoundBoxApp extends StatelessWidget {
     );
 
     return ChangeNotifierProvider(
-      create: (_) => SoundSelectionState(initialOrder: whiteNoiseSounds),
+      create: (_) => SoundSelectionState(initialOrder: initialSounds),
       child: MaterialApp(
         title: 'Sound Box',
         debugShowCheckedModeBanner: false,

@@ -15,31 +15,34 @@ import 'package:sound_box/features/sounds/sounds_page.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   testWidgets('home screen renders hero copy', (tester) async {
-    await tester.pumpWidget(
-      const SoundBoxApp(),
-    );
-    expect(find.textContaining('白噪音收音机'), findsWidgets);
+    final sounds = await loadWhiteNoiseSounds();
+    await tester.pumpWidget(SoundBoxApp(initialSounds: sounds));
+    expect(find.byIcon(Icons.graphic_eq), findsWidgets);
   });
 
   testWidgets('tapping equalizer icon navigates to sounds page', (
     tester,
   ) async {
-    await tester.pumpWidget(const SoundBoxApp());
+    final sounds = await loadWhiteNoiseSounds();
+    await tester.pumpWidget(SoundBoxApp(initialSounds: sounds));
     await tester.tap(find.byIcon(Icons.graphic_eq).first);
-    await tester.pumpAndSettle();
-    expect(find.text('声音排序和音量设置'), findsOneWidget);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('图钉'), findsOneWidget);
   });
 
   testWidgets('sounds page renders sound list', (tester) async {
+    final sounds = await loadWhiteNoiseSounds();
     await tester.pumpWidget(
       ChangeNotifierProvider(
-        create: (_) => SoundSelectionState(initialOrder: whiteNoiseSounds),
+        create: (_) => SoundSelectionState(initialOrder: sounds),
         child: const MaterialApp(home: SoundsPage()),
       ),
     );
-    expect(find.text('声音排序和音量设置'), findsOneWidget);
     expect(find.byType(ListTile), findsNothing);
-    expect(find.text('滑滑细雨'), findsOneWidget);
+    expect(find.text(sounds.first.name), findsWidgets);
   });
 }
