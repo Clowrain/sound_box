@@ -14,7 +14,8 @@ class SoundsPage extends StatefulWidget {
 
 class _SoundsPageState extends State<SoundsPage> {
   final Map<String, WhiteNoiseSoundState> _soundStates = {};
-  final Set<String> _pinnedSoundIds = <String>{};
+  final Set<String> _pinnedVariantIds = <String>{};
+  final Set<String> _expandedSoundIds = <String>{};
   String? _activeCategory;
 
   WhiteNoiseSoundState _stateFor(WhiteNoiseSound sound) {
@@ -38,17 +39,32 @@ class _SoundsPageState extends State<SoundsPage> {
     });
   }
 
-  void _togglePin(WhiteNoiseSound sound) {
+  String _variantKey(WhiteNoiseSound sound, int variantIndex) =>
+      '${sound.id}::$variantIndex';
+
+  void _toggleVariantPin(WhiteNoiseSound sound, int variantIndex) {
+    final key = _variantKey(sound, variantIndex);
     setState(() {
-      if (_pinnedSoundIds.contains(sound.id)) {
-        _pinnedSoundIds.remove(sound.id);
+      if (_pinnedVariantIds.contains(key)) {
+        _pinnedVariantIds.remove(key);
       } else {
-        _pinnedSoundIds.add(sound.id);
+        _pinnedVariantIds.add(key);
       }
     });
   }
 
-  bool _isPinned(WhiteNoiseSound sound) => _pinnedSoundIds.contains(sound.id);
+  bool _isVariantPinned(WhiteNoiseSound sound, int variantIndex) =>
+      _pinnedVariantIds.contains(_variantKey(sound, variantIndex));
+
+  void _toggleExpanded(WhiteNoiseSound sound) {
+    setState(() {
+      if (_expandedSoundIds.contains(sound.id)) {
+        _expandedSoundIds.remove(sound.id);
+      } else {
+        _expandedSoundIds.add(sound.id);
+      }
+    });
+  }
 
   void _setCategory(String? category) {
     setState(() {
@@ -80,24 +96,46 @@ class _SoundsPageState extends State<SoundsPage> {
     return options;
   }
 
+  List<_SoundVariantEntry> _variantEntries(WhiteNoiseSound sound) {
+    final variants = sound.variants.isNotEmpty
+        ? sound.variants
+        : [WhiteNoiseSoundVariant(name: sound.name, path: '')];
+    return List.generate(
+      variants.length,
+      (index) => _SoundVariantEntry(
+        sound: sound,
+        variant: variants[index],
+        variantIndex: index,
+      ),
+    );
+  }
+
+  List<_SoundVariantEntry> _resolvePinnedVariants(
+    List<WhiteNoiseSound> sounds,
+  ) {
+    final result = <_SoundVariantEntry>[];
+    for (final sound in sounds) {
+      for (final entry in _variantEntries(sound)) {
+        if (_isVariantPinned(sound, entry.variantIndex)) {
+          result.add(entry);
+        }
+      }
+    }
+    return result;
+  }
+
+  void _handlePinnedVariantTap(_SoundVariantEntry entry) {
+    _toggleVariantPin(entry.sound, entry.variantIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
     final selection = context.watch<SoundSelectionState>();
     final orderedSounds = selection.sounds;
     final categoryOptions = _categoryOptionsFor(orderedSounds);
-    final pinnedSounds = orderedSounds.where(_isPinned).toList(growable: false);
-    final unpinnedSounds = orderedSounds
-        .where((sound) => !_isPinned(sound))
-        .toList(growable: false);
-    final filteredUnpinned = _applyCategoryFilter(unpinnedSounds);
-    final pinnedVisible = _activeCategory == null
-        ? pinnedSounds
-        : pinnedSounds
-              .where((sound) => sound.category == _activeCategory)
-              .toList(growable: false);
-    final visibleSounds = [...pinnedVisible, ...filteredUnpinned];
-    final showFilterEmptyState =
-        _activeCategory != null && visibleSounds.isEmpty;
+    final filteredSounds = _applyCategoryFilter(orderedSounds);
+    final pinnedVariants = _resolvePinnedVariants(orderedSounds);
+    final showFilterEmptyState = filteredSounds.isEmpty;
 
     return Scaffold(
       body: Container(
@@ -131,8 +169,8 @@ class _SoundsPageState extends State<SoundsPage> {
                       ),
                       const SizedBox(height: 16),
                       _PinnedSoundStrip(
-                        sounds: pinnedSounds,
-                        onUnpin: _togglePin,
+                        variants: pinnedVariants,
+                        onUnpin: _handlePinnedVariantTap,
                       ),
                       if (categoryOptions.isNotEmpty) ...[
                         const SizedBox(height: 16),
@@ -149,17 +187,13 @@ class _SoundsPageState extends State<SoundsPage> {
               ),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: visibleSounds.isEmpty
+                sliver: filteredSounds.isEmpty
                     ? const SliverToBoxAdapter(child: _EmptyFilterState())
                     : SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                          final sound = visibleSounds[index];
-                          final pinned = _isPinned(sound);
-                          return _buildSoundTile(
-                            sound: sound,
-                            isPinned: pinned,
-                          );
-                        }, childCount: visibleSounds.length),
+                          final sound = filteredSounds[index];
+                          return _buildSoundTile(sound: sound);
+                        }, childCount: filteredSounds.length),
                       ),
               ),
               if (showFilterEmptyState)
@@ -175,37 +209,68 @@ class _SoundsPageState extends State<SoundsPage> {
     );
   }
 
-  Widget _buildSoundTile({
-    required WhiteNoiseSound sound,
-    required bool isPinned,
-  }) {
+  Widget _buildSoundTile({required WhiteNoiseSound sound}) {
     final state = _stateFor(sound);
+    final variants = _variantEntries(sound);
+    final hasVariants = variants.length > 1;
+    final isExpanded = hasVariants && _expandedSoundIds.contains(sound.id);
+    final singleVariantPinned = _isVariantPinned(sound, 0);
 
     return Padding(
       key: ValueKey('tile_${sound.id}'),
       padding: const EdgeInsets.only(bottom: 18),
-      child: SoundCard(
-        sound: sound,
-        volume: state.volume,
-        isPlaying: state.isPlaying,
-        onToggle: () => _toggleSound(sound),
-        onVolumeChanged: (value) => _changeVolume(sound, value),
-        isPinned: isPinned,
-        onTogglePin: () => _togglePin(sound),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SoundCard(
+            sound: sound,
+            volume: state.volume,
+            isPlaying: state.isPlaying,
+            onToggle: () => _toggleSound(sound),
+            onVolumeChanged: (value) => _changeVolume(sound, value),
+            showPinButton: !hasVariants,
+            isPinned: singleVariantPinned,
+            onTogglePin: !hasVariants
+                ? () => _toggleVariantPin(sound, 0)
+                : null,
+            showExpandButton: hasVariants,
+            isExpanded: isExpanded,
+            onToggleExpand: hasVariants ? () => _toggleExpanded(sound) : null,
+          ),
+          if (hasVariants && isExpanded)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Column(
+                children: variants
+                    .map(
+                      (entry) => _VariantRow(
+                        entry: entry,
+                        isPinned: _isVariantPinned(
+                          entry.sound,
+                          entry.variantIndex,
+                        ),
+                        onTogglePin: () =>
+                            _toggleVariantPin(entry.sound, entry.variantIndex),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+        ],
       ),
     );
   }
 }
 
 class _PinnedSoundStrip extends StatelessWidget {
-  const _PinnedSoundStrip({required this.sounds, required this.onUnpin});
+  const _PinnedSoundStrip({required this.variants, required this.onUnpin});
 
-  final List<WhiteNoiseSound> sounds;
-  final ValueChanged<WhiteNoiseSound> onUnpin;
+  final List<_SoundVariantEntry> variants;
+  final ValueChanged<_SoundVariantEntry> onUnpin;
 
   @override
   Widget build(BuildContext context) {
-    if (sounds.isEmpty) {
+    if (variants.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -234,10 +299,14 @@ class _PinnedSoundStrip extends StatelessWidget {
       height: 96,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: sounds.length,
+        itemCount: variants.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final sound = sounds[index];
+          final entry = variants[index];
+          final sound = entry.sound;
+          final label = entry.variant.name.isNotEmpty
+              ? entry.variant.name
+              : sound.name;
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -260,7 +329,7 @@ class _PinnedSoundStrip extends StatelessWidget {
                     right: -6,
                     top: -6,
                     child: GestureDetector(
-                      onTap: () => onUnpin(sound),
+                      onTap: () => onUnpin(entry),
                       child: Container(
                         width: 24,
                         height: 24,
@@ -285,7 +354,7 @@ class _PinnedSoundStrip extends StatelessWidget {
               SizedBox(
                 width: 68,
                 child: Text(
-                  sound.name,
+                  label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
@@ -298,6 +367,57 @@ class _PinnedSoundStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+class _VariantRow extends StatelessWidget {
+  const _VariantRow({
+    required this.entry,
+    required this.isPinned,
+    required this.onTogglePin,
+  });
+
+  final _SoundVariantEntry entry;
+  final bool isPinned;
+  final VoidCallback onTogglePin;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = entry.variant.name.isNotEmpty
+        ? entry.variant.name
+        : entry.sound.name;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          SoundCardIconButton(
+            icon: isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+            onPressed: onTogglePin,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SoundVariantEntry {
+  const _SoundVariantEntry({
+    required this.sound,
+    required this.variant,
+    required this.variantIndex,
+  });
+
+  final WhiteNoiseSound sound;
+  final WhiteNoiseSoundVariant variant;
+  final int variantIndex;
 }
 
 class _CategoryFilterBar extends StatelessWidget {

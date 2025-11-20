@@ -9,8 +9,12 @@ class SoundCard extends StatelessWidget {
     required this.isPlaying,
     required this.onToggle,
     required this.onVolumeChanged,
+    required this.showPinButton,
     required this.isPinned,
-    required this.onTogglePin,
+    this.onTogglePin,
+    this.showExpandButton = false,
+    this.isExpanded = false,
+    this.onToggleExpand,
   });
 
   final WhiteNoiseSound sound;
@@ -18,8 +22,12 @@ class SoundCard extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onToggle;
   final ValueChanged<double> onVolumeChanged;
+  final bool showPinButton;
   final bool isPinned;
-  final VoidCallback onTogglePin;
+  final VoidCallback? onTogglePin;
+  final bool showExpandButton;
+  final bool isExpanded;
+  final VoidCallback? onToggleExpand;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,7 @@ class SoundCard extends StatelessWidget {
         ? Icons.pause_rounded
         : Icons.play_arrow_rounded;
     final pinIcon = isPinned ? Icons.push_pin : Icons.push_pin_outlined;
+    final expandIcon = isExpanded ? Icons.expand_less : Icons.expand_more;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -87,8 +96,13 @@ class SoundCard extends StatelessWidget {
             onPressed: locked ? null : onToggle,
             muted: locked,
           ),
-          const SizedBox(width: 8),
-          SoundCardIconButton(icon: pinIcon, onPressed: onTogglePin),
+          if (showPinButton && onTogglePin != null) ...[
+            const SizedBox(width: 8),
+            SoundCardIconButton(icon: pinIcon, onPressed: onTogglePin),
+          ] else if (showExpandButton && onToggleExpand != null) ...[
+            const SizedBox(width: 8),
+            SoundCardIconButton(icon: expandIcon, onPressed: onToggleExpand),
+          ],
         ],
       ),
     );
