@@ -158,18 +158,20 @@ class _SoundsPageState extends State<SoundsPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Spacer(),
+                          Expanded(
+                            child: _PinnedSoundStrip(
+                              variants: pinnedVariants,
+                              onUnpin: _handlePinnedVariantTap,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
                           _GhostButton(
                             icon: Icons.close,
                             onPressed: () => Navigator.of(context).maybePop(),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 16),
-                      _PinnedSoundStrip(
-                        variants: pinnedVariants,
-                        onUnpin: _handlePinnedVariantTap,
                       ),
                       if (categoryOptions.isNotEmpty) ...[
                         const SizedBox(height: 16),
@@ -257,37 +259,58 @@ class _PinnedSoundStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (variants.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.push_pin_outlined, color: Colors.white70),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                '点击音效右侧的图钉，可将常用音效固定在这里',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.75),
-                ),
-              ),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 280),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: variants.isEmpty
+          ? const _PinnedHint()
+          : _PinnedList(
+              key: const ValueKey('pinned_list'),
+              variants: variants,
+              onUnpin: onUnpin,
             ),
-          ],
-        ),
-      );
-    }
+    );
+  }
+}
 
+class _PinnedHint extends StatelessWidget {
+  const _PinnedHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+      ),
+      child: Text(
+        '点击音效右侧的图钉，可将常用音色固定在这里',
+        maxLines: 1,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Colors.white.withValues(alpha: 0.65),
+        ),
+      ),
+    );
+  }
+}
+
+class _PinnedList extends StatelessWidget {
+  const _PinnedList({super.key, required this.variants, required this.onUnpin});
+
+  final List<_SoundVariantEntry> variants;
+  final ValueChanged<_SoundVariantEntry> onUnpin;
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
-      height: 96,
+      height: 50,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: variants.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final entry = variants[index];
           final sound = entry.sound;
@@ -301,8 +324,8 @@ class _PinnedSoundStrip extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.08),
                       shape: BoxShape.circle,
@@ -310,20 +333,16 @@ class _PinnedSoundStrip extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
-                    child: Icon(
-                      entry.sound.icon,
-                      color: Colors.white,
-                      size: 30,
-                    ),
+                    child: Icon(sound.icon, color: Colors.white, size: 16),
                   ),
                   Positioned(
-                    right: -6,
-                    top: -6,
+                    right: -4,
+                    top: -4,
                     child: GestureDetector(
                       onTap: () => onUnpin(entry),
                       child: Container(
-                        width: 24,
-                        height: 24,
+                        width: 18,
+                        height: 18,
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.8),
                           shape: BoxShape.circle,
@@ -333,7 +352,7 @@ class _PinnedSoundStrip extends StatelessWidget {
                         ),
                         child: const Icon(
                           Icons.close,
-                          size: 14,
+                          size: 10,
                           color: Colors.white,
                         ),
                       ),
@@ -341,9 +360,9 @@ class _PinnedSoundStrip extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 2),
               SizedBox(
-                width: 68,
+                width: 48,
                 child: Text(
                   label,
                   maxLines: 1,
@@ -499,18 +518,21 @@ class _GhostButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(24),
-      child: Ink(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(999),
+        child: Ink(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          ),
+          child: Icon(icon, color: Colors.white),
         ),
-        child: Icon(icon, color: Colors.white),
       ),
     );
   }
