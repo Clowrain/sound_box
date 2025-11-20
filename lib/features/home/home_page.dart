@@ -410,32 +410,26 @@ class _SquareButtonState extends State<_SquareButton> {
   void initState() {
     super.initState();
     _breathValue = _breathSignal.value;
-    if (_isIconOnly) {
-      _breathListener = () {
-        if (!_isActive) return;
-        setState(() {
-          _breathValue = _breathSignal.value;
-        });
-      };
-      _breathSignal.addListener(_breathListener!);
-    }
+    _breathListener = () {
+      if (!_isActive) return;
+      setState(() {
+        _breathValue = _breathSignal.value;
+      });
+    };
+    _breathSignal.addListener(_breathListener!);
   }
 
   @override
   void dispose() {
-    if (_breathListener != null) {
-      _breathSignal.removeListener(_breathListener!);
-    }
+    _breathSignal.removeListener(_breathListener!);
     super.dispose();
   }
 
   void _handleTap() {
-    if (_isIconOnly) {
-      setState(() {
-        _isActive = !_isActive;
-        _breathValue = _breathSignal.value;
-      });
-    }
+    setState(() {
+      _isActive = !_isActive;
+      _breathValue = _breathSignal.value;
+    });
     widget.onTap?.call();
   }
 
@@ -450,9 +444,7 @@ class _SquareButtonState extends State<_SquareButton> {
   }
 
   Color _iconColor(double glowStrength) {
-    if (!_isIconOnly) {
-      return Colors.white;
-    }
+    if (!_isIconOnly) return Colors.white;
     if (!_isActive) {
       return Colors.black;
     }
@@ -464,7 +456,7 @@ class _SquareButtonState extends State<_SquareButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double glowStrength = _isIconOnly && _isActive ? _breathValue : 0;
+    final double glowStrength = _isActive ? _breathValue : 0;
     final iconColor = _iconColor(glowStrength);
     final bool showText = !_isIconOnly;
     final double elevation = _isPressed ? 4 : 10;
@@ -611,9 +603,11 @@ class _BreathingIcon extends StatelessWidget {
     final double blur = 8 + 12 * glow;
     final double spread = 0.5 + 2 * glow;
     final double hazeSize = size;
-    final Color hazeColor = const Color(
-      0xFFFFF4C9,
-    ).withValues(alpha: 0.05 + 0.25 * glow);
+    final Color hazeColor =
+        const Color(0xFFFFF4C9).withValues(alpha: 0.05 + 0.25 * glow);
+    final Color litIconColor =
+        Color.lerp(color, const Color(0xFFFFF4C9), glow * 0.6) ?? color;
+    final double scale = 1 + glow * 0.08;
 
     return Stack(
       alignment: Alignment.center,
@@ -641,7 +635,10 @@ class _BreathingIcon extends StatelessWidget {
               ),
             ),
           ),
-        Icon(icon, color: color, size: size),
+        Transform.scale(
+          scale: scale,
+          child: Icon(icon, color: litIconColor, size: size),
+        ),
       ],
     );
   }
