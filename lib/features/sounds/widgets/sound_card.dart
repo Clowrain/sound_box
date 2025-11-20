@@ -49,7 +49,6 @@ class SoundCard extends StatelessWidget {
           onPanDown: (details) => handleDrag(details.localPosition.dx),
           onPanUpdate: (details) => handleDrag(details.localPosition.dx),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFF1B1C29),
               borderRadius: BorderRadius.circular(12),
@@ -71,14 +70,7 @@ class SoundCard extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       widthFactor: volume.clamp(0, 1),
                       child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white.withValues(alpha: 0.12),
-                              Colors.white.withValues(alpha: 0.0),
-                            ],
-                          ),
-                        ),
+                        color: Colors.white.withValues(alpha: 0.08),
                       ),
                     ),
                   ),
@@ -88,6 +80,7 @@ class SoundCard extends StatelessWidget {
                     Expanded(
                       child: Row(
                         children: [
+                          const SizedBox(width: 4),
                           Icon(sound.icon, color: Colors.white, size: 24),
                           const SizedBox(width: 10),
                           Flexible(
