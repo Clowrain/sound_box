@@ -45,12 +45,12 @@ class SoundCard extends StatelessWidget {
           onVolumeChanged(ratio);
         }
 
-        bool _isInControlZone(double dx) => dx >= width - reservedControlWidth;
+        bool isInControlZone(double dx) => dx >= width - reservedControlWidth;
 
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTapDown: (details) {
-            if (_isInControlZone(details.localPosition.dx)) return;
+            if (isInControlZone(details.localPosition.dx)) return;
             handleDrag(details.localPosition.dx);
           },
           onHorizontalDragStart: (details) =>

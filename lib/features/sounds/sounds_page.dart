@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sound_box/models/white_noise_sound.dart';
 import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
+import 'package:sound_box/utils/pinned_variant_resolver.dart';
 
 import 'widgets/sound_card.dart';
 
@@ -86,48 +87,7 @@ class _SoundsPageState extends State<SoundsPage> {
     return options;
   }
 
-  List<_SoundVariantEntry> _variantEntries(WhiteNoiseSound sound) {
-    final variants = sound.variants.isNotEmpty
-        ? sound.variants
-        : [WhiteNoiseSoundVariant(name: sound.name, path: '')];
-    return List.generate(
-      variants.length,
-      (index) => _SoundVariantEntry(
-        sound: sound,
-        variant: variants[index],
-        variantIndex: index,
-      ),
-    );
-  }
-
-  List<_SoundVariantEntry> _pinnedEntriesFor(
-    List<String> keys,
-    List<WhiteNoiseSound> sounds,
-  ) {
-    final soundMap = {for (final sound in sounds) sound.id: sound};
-    final entries = <_SoundVariantEntry>[];
-    for (final key in keys) {
-      final entry = _entryFromKey(key, soundMap);
-      if (entry != null) entries.add(entry);
-    }
-    return entries;
-  }
-
-  _SoundVariantEntry? _entryFromKey(
-    String key,
-    Map<String, WhiteNoiseSound> soundMap,
-  ) {
-    final parts = key.split('::');
-    if (parts.length != 2) return null;
-    final sound = soundMap[parts[0]];
-    if (sound == null) return null;
-    final index = int.tryParse(parts[1]) ?? 0;
-    final entries = _variantEntries(sound);
-    if (index < 0 || index >= entries.length) return null;
-    return entries[index];
-  }
-
-  void _handlePinnedVariantTap(_SoundVariantEntry entry) {
+  void _handlePinnedVariantTap(PinnedVariantEntry entry) {
     _toggleVariantPin(entry.sound, entry.variantIndex);
   }
 
@@ -138,7 +98,7 @@ class _SoundsPageState extends State<SoundsPage> {
     final orderedSounds = selection.sounds;
     final categoryOptions = _categoryOptionsFor(orderedSounds);
     final filteredSounds = _applyCategoryFilter(orderedSounds);
-    final pinnedVariants = _pinnedEntriesFor(
+    final pinnedVariants = pinnedEntriesFromKeys(
       pinnedState.pinnedKeys,
       orderedSounds,
     );
@@ -225,7 +185,7 @@ class _SoundsPageState extends State<SoundsPage> {
     required WhiteNoiseSound sound,
     required PinnedSoundsState pinnedState,
   }) {
-    final variants = _variantEntries(sound);
+    final variants = variantEntriesForSound(sound);
     return Padding(
       key: ValueKey('tile_${sound.id}'),
       padding: const EdgeInsets.only(bottom: 24),
@@ -270,8 +230,8 @@ class _SoundsPageState extends State<SoundsPage> {
 class _PinnedSoundStrip extends StatelessWidget {
   const _PinnedSoundStrip({required this.variants, required this.onUnpin});
 
-  final List<_SoundVariantEntry> variants;
-  final ValueChanged<_SoundVariantEntry> onUnpin;
+  final List<PinnedVariantEntry> variants;
+  final ValueChanged<PinnedVariantEntry> onUnpin;
 
   @override
   Widget build(BuildContext context) {
@@ -316,8 +276,8 @@ class _PinnedHint extends StatelessWidget {
 class _PinnedList extends StatelessWidget {
   const _PinnedList({super.key, required this.variants, required this.onUnpin});
 
-  final List<_SoundVariantEntry> variants;
-  final ValueChanged<_SoundVariantEntry> onUnpin;
+  final List<PinnedVariantEntry> variants;
+  final ValueChanged<PinnedVariantEntry> onUnpin;
 
   @override
   Widget build(BuildContext context) {
@@ -393,18 +353,6 @@ class _PinnedList extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SoundVariantEntry {
-  const _SoundVariantEntry({
-    required this.sound,
-    required this.variant,
-    required this.variantIndex,
-  });
-
-  final WhiteNoiseSound sound;
-  final WhiteNoiseSoundVariant variant;
-  final int variantIndex;
 }
 
 class _CategoryFilterBar extends StatelessWidget {

@@ -10,6 +10,7 @@ class PinnedSoundsState extends ChangeNotifier {
 
   static const _prefsKey = 'pinned_sound_variant_ids';
   final LinkedHashSet<String> _pinned = LinkedHashSet<String>();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   List<String> get pinnedKeys => List.unmodifiable(_pinned);
 
@@ -26,7 +27,7 @@ class PinnedSoundsState extends ChangeNotifier {
   }
 
   Future<void> _restore() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     final stored = prefs.getStringList(_prefsKey);
     if (stored != null) {
       _pinned
@@ -37,7 +38,7 @@ class PinnedSoundsState extends ChangeNotifier {
   }
 
   Future<void> _persist() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setStringList(_prefsKey, _pinned.toList());
   }
 }

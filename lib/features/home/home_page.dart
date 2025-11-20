@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:sound_box/features/home/widgets/dot_matrix_clock.dart';
 import 'package:sound_box/models/white_noise_sound.dart';
 import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
+import 'package:sound_box/utils/pinned_variant_resolver.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,65 +19,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late DateTime _now;
+  late final ValueNotifier<DateTime> _nowNotifier;
   Timer? _ticker;
 
   @override
   void initState() {
     super.initState();
-    _now = DateTime.now();
+    _nowNotifier = ValueNotifier(DateTime.now());
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {
-        _now = DateTime.now();
-      });
+      _nowNotifier.value = DateTime.now();
     });
   }
 
   @override
   void dispose() {
     _ticker?.cancel();
+    _nowNotifier.dispose();
     super.dispose();
   }
 
   void _openSounds() {
     Navigator.of(context).pushNamed(SoundRoutes.sounds);
-  }
-
-  List<_HomePinnedEntry> _pinnedEntriesForHome(
-    List<String> keys,
-    List<WhiteNoiseSound> sounds,
-  ) {
-    final soundMap = {for (final sound in sounds) sound.id: sound};
-    final entries = <_HomePinnedEntry>[];
-    for (final key in keys) {
-      final entry = _entryFromKey(key, soundMap);
-      if (entry != null) entries.add(entry);
-    }
-    return entries;
-  }
-
-  _HomePinnedEntry? _entryFromKey(
-    String key,
-    Map<String, WhiteNoiseSound> soundMap,
-  ) {
-    final parts = key.split('::');
-    if (parts.length != 2) return null;
-    final sound = soundMap[parts[0]];
-    if (sound == null) return null;
-    final index = int.tryParse(parts[1]) ?? 0;
-    final variants = _variantsForSound(sound);
-    if (index < 0 || index >= variants.length) return null;
-    return _HomePinnedEntry(
-      sound: sound,
-      variant: variants[index],
-      variantIndex: index,
-    );
-  }
-
-  List<WhiteNoiseSoundVariant> _variantsForSound(WhiteNoiseSound sound) {
-    return sound.variants.isNotEmpty
-        ? sound.variants
-        : [WhiteNoiseSoundVariant(name: sound.name, path: '')];
   }
 
   @override
@@ -96,7 +60,7 @@ class _HomePageState extends State<HomePage> {
                 final selection = context.watch<SoundSelectionState>();
                 final pinnedState = context.watch<PinnedSoundsState>();
                 final featured = selection.primary(8);
-                final pinnedEntries = _pinnedEntriesForHome(
+                final pinnedEntries = pinnedEntriesFromKeys(
                   pinnedState.pinnedKeys,
                   selection.sounds,
                 );
@@ -125,13 +89,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: isPortrait
                       ? _PortraitLayout(
-                          now: _now,
+                          nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           pinnedEntries: pinnedEntries,
                         )
                       : _LandscapeLayout(
-                          now: _now,
+                          nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           pinnedEntries: pinnedEntries,
@@ -148,27 +112,29 @@ class _HomePageState extends State<HomePage> {
 
 class _PortraitLayout extends StatelessWidget {
   const _PortraitLayout({
-    required this.now,
+    required this.nowListenable,
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.pinnedEntries,
   });
 
-  final DateTime now;
+  final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
-  final List<_HomePinnedEntry> pinnedEntries;
+  final List<PinnedVariantEntry> pinnedEntries;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: Column(
             children: [
-              Expanded(flex: 4, child: _DisplaySurface(now: now)),
+              Expanded(
+                flex: 4,
+                child: _DisplaySurface(nowListenable: nowListenable),
+              ),
               const SizedBox(height: 16),
               _PrimaryActions(onPrimaryAction: onPrimaryAction),
               const SizedBox(height: 12),
@@ -189,20 +155,19 @@ class _PortraitLayout extends StatelessWidget {
 
 class _LandscapeLayout extends StatelessWidget {
   const _LandscapeLayout({
-    required this.now,
+    required this.nowListenable,
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.pinnedEntries,
   });
 
-  final DateTime now;
+  final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
-  final List<_HomePinnedEntry> pinnedEntries;
+  final List<PinnedVariantEntry> pinnedEntries;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       children: [
         SizedBox(
@@ -244,7 +209,11 @@ class _LandscapeLayout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: _DisplaySurface(now: now, minRows: 10, minColumns: 28),
+                child: _DisplaySurface(
+                  nowListenable: nowListenable,
+                  minRows: 10,
+                  minColumns: 28,
+                ),
               ),
             ],
           ),
@@ -270,12 +239,12 @@ class _LandscapeLayout extends StatelessWidget {
 
 class _DisplaySurface extends StatelessWidget {
   const _DisplaySurface({
-    required this.now,
+    required this.nowListenable,
     this.minRows = 14,
     this.minColumns = 20,
   });
 
-  final DateTime now;
+  final ValueListenable<DateTime> nowListenable;
   final int minRows;
   final int minColumns;
 
@@ -299,10 +268,17 @@ class _DisplaySurface extends StatelessWidget {
           BoxShadow(color: Color(0x3310111A), blurRadius: 40, spreadRadius: 8),
         ],
       ),
-      child: DotMatrixClock(
-        time: now,
-        minRows: minRows,
-        minColumns: minColumns,
+      child: RepaintBoundary(
+        child: ValueListenableBuilder<DateTime>(
+          valueListenable: nowListenable,
+          builder: (_, now, __) {
+            return DotMatrixClock(
+              time: now,
+              minRows: minRows,
+              minColumns: minColumns,
+            );
+          },
+        ),
       ),
     );
   }
@@ -346,7 +322,7 @@ class _QuickSoundGrid extends StatelessWidget {
 
   final List<WhiteNoiseSound> sounds;
   final int crossAxisCount;
-  final List<_HomePinnedEntry> pinnedEntries;
+  final List<PinnedVariantEntry> pinnedEntries;
 
   @override
   Widget build(BuildContext context) {
@@ -363,21 +339,23 @@ class _QuickSoundGrid extends StatelessWidget {
             .floor()
             .clamp(crossAxisCount, 6);
 
-        return GridView.count(
-          crossAxisCount: computedCrossAxisCount,
+        return GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1,
-          mainAxisSpacing: gap,
-          crossAxisSpacing: gap,
-          children: items
-              .map(
-                (item) => _SquareButton(
-                  icon: item.icon,
-                  label: item.label,
-                  onTap: () {},
-                ),
-              )
-              .toList(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: computedCrossAxisCount,
+            childAspectRatio: 1,
+            mainAxisSpacing: gap,
+            crossAxisSpacing: gap,
+          ),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return _SquareButton(
+              icon: item.icon,
+              label: item.label,
+              onTap: () {},
+            );
+          },
         );
       },
     );
@@ -402,18 +380,6 @@ class _QuickSoundGrid extends StatelessWidget {
   }
 }
 
-class _HomePinnedEntry {
-  const _HomePinnedEntry({
-    required this.sound,
-    required this.variant,
-    required this.variantIndex,
-  });
-
-  final WhiteNoiseSound sound;
-  final WhiteNoiseSoundVariant variant;
-  final int variantIndex;
-}
-
 class _GridItem {
   const _GridItem({required this.icon, required this.label});
 
@@ -422,16 +388,10 @@ class _GridItem {
 }
 
 class _SquareButton extends StatefulWidget {
-  const _SquareButton({
-    this.icon,
-    this.label,
-    this.iconOnly = false,
-    this.onTap,
-  });
+  const _SquareButton({this.icon, this.label, this.onTap});
 
   final IconData? icon;
   final String? label;
-  final bool iconOnly;
   final VoidCallback? onTap;
 
   @override
@@ -444,18 +404,21 @@ class _SquareButtonState extends State<_SquareButton> {
   bool _isPressed = false;
   bool _isActive = false;
   double _breathValue = 0;
+  bool get _isIconOnly => (widget.label == null) || widget.label!.isEmpty;
 
   @override
   void initState() {
     super.initState();
     _breathValue = _breathSignal.value;
-    _breathListener = () {
-      if (!_isActive) return;
-      setState(() {
-        _breathValue = _breathSignal.value;
-      });
-    };
-    _breathSignal.addListener(_breathListener!);
+    if (_isIconOnly) {
+      _breathListener = () {
+        if (!_isActive) return;
+        setState(() {
+          _breathValue = _breathSignal.value;
+        });
+      };
+      _breathSignal.addListener(_breathListener!);
+    }
   }
 
   @override
@@ -467,7 +430,7 @@ class _SquareButtonState extends State<_SquareButton> {
   }
 
   void _handleTap() {
-    if (widget.iconOnly) {
+    if (_isIconOnly) {
       setState(() {
         _isActive = !_isActive;
         _breathValue = _breathSignal.value;
@@ -487,7 +450,7 @@ class _SquareButtonState extends State<_SquareButton> {
   }
 
   Color _iconColor(double glowStrength) {
-    if (!widget.iconOnly) {
+    if (!_isIconOnly) {
       return Colors.white;
     }
     if (!_isActive) {
@@ -501,9 +464,9 @@ class _SquareButtonState extends State<_SquareButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double glowStrength = widget.iconOnly && _isActive ? _breathValue : 0;
+    final double glowStrength = _isIconOnly && _isActive ? _breathValue : 0;
     final iconColor = _iconColor(glowStrength);
-    final bool showText = !widget.iconOnly && widget.label != null;
+    final bool showText = !_isIconOnly;
     final double elevation = _isPressed ? 4 : 10;
 
     return Material(
@@ -556,10 +519,10 @@ class _SquareButtonState extends State<_SquareButton> {
                     ? const [Color(0xFF1A1F2C), Color(0xFF131722)]
                     : const [Color(0xFF232838), Color(0xFF171C28)],
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.04)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
             ),
             child: Center(
-              child: widget.iconOnly
+              child: _isIconOnly
                   ? _BreathingIcon(
                       icon: widget.icon,
                       color: iconColor,
@@ -578,7 +541,7 @@ class _SquareButtonState extends State<_SquareButton> {
                         if (showText) ...[
                           const SizedBox(height: 6),
                           Text(
-                            widget.label ?? '',
+                            widget.label!,
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: Colors.white,
                             ),
@@ -597,12 +560,12 @@ class _SquareButtonState extends State<_SquareButton> {
 }
 
 class _SidePill extends StatelessWidget {
-  const _SidePill({this.child, this.width = 70, this.height = 110, this.onTap});
+  const _SidePill({this.child, this.height = 110, this.onTap});
 
   final Widget? child;
-  final double width;
   final double height;
   final VoidCallback? onTap;
+  static const double _width = 70;
 
   @override
   Widget build(BuildContext context) {
@@ -612,7 +575,7 @@ class _SidePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         onTap: onTap,
         child: Ink(
-          width: width,
+          width: _width,
           height: height,
           decoration: BoxDecoration(
             color: const Color(0xFF1B1F2C).withValues(alpha: 0.65),
@@ -650,7 +613,7 @@ class _BreathingIcon extends StatelessWidget {
     final double hazeSize = size;
     final Color hazeColor = const Color(
       0xFFFFF4C9,
-    ).withOpacity(0.05 + 0.25 * glow);
+    ).withValues(alpha: 0.05 + 0.25 * glow);
 
     return Stack(
       alignment: Alignment.center,
@@ -671,7 +634,7 @@ class _BreathingIcon extends StatelessWidget {
               gradient: RadialGradient(
                 colors: [
                   hazeColor,
-                  hazeColor.withOpacity(0.04),
+                  hazeColor.withValues(alpha: 0.04),
                   Colors.transparent,
                 ],
                 stops: const [0, 0.85, 1],
