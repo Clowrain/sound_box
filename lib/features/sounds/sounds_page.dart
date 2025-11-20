@@ -310,11 +310,10 @@ class _PinnedSoundStrip extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
-                    child: Center(
-                      child: Text(
-                        label.characters.first,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                    child: Icon(
+                      entry.sound.icon,
+                      color: Colors.white,
+                      size: 30,
                     ),
                   ),
                   Positioned(
