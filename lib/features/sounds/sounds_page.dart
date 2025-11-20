@@ -15,32 +15,41 @@ class SoundsPage extends StatefulWidget {
 class _SoundsPageState extends State<SoundsPage> {
   final Map<String, WhiteNoiseSoundState> _soundStates = {};
   final Set<String> _pinnedVariantIds = <String>{};
-  final Set<String> _expandedSoundIds = <String>{};
   String? _activeCategory;
-
-  WhiteNoiseSoundState _stateFor(WhiteNoiseSound sound) {
-    return _soundStates[sound.id] ??
-        const WhiteNoiseSoundState(volume: 0.6, isPlaying: false);
-  }
-
-  void _toggleSound(WhiteNoiseSound sound) {
-    if (sound.locked) return;
-    final current = _stateFor(sound);
-    setState(() {
-      _soundStates[sound.id] = current.copyWith(isPlaying: !current.isPlaying);
-    });
-  }
-
-  void _changeVolume(WhiteNoiseSound sound, double value) {
-    if (sound.locked) return;
-    final current = _stateFor(sound);
-    setState(() {
-      _soundStates[sound.id] = current.copyWith(volume: value.clamp(0, 1));
-    });
-  }
 
   String _variantKey(WhiteNoiseSound sound, int variantIndex) =>
       '${sound.id}::$variantIndex';
+
+  WhiteNoiseSoundState _stateForVariant(
+    WhiteNoiseSound sound,
+    int variantIndex,
+  ) {
+    final key = _variantKey(sound, variantIndex);
+    return _soundStates[key] ??
+        const WhiteNoiseSoundState(volume: 0.6, isPlaying: false);
+  }
+
+  void _toggleVariant(WhiteNoiseSound sound, int variantIndex) {
+    if (sound.locked) return;
+    final key = _variantKey(sound, variantIndex);
+    final current = _stateForVariant(sound, variantIndex);
+    setState(() {
+      _soundStates[key] = current.copyWith(isPlaying: !current.isPlaying);
+    });
+  }
+
+  void _changeVariantVolume(
+    WhiteNoiseSound sound,
+    int variantIndex,
+    double value,
+  ) {
+    if (sound.locked) return;
+    final key = _variantKey(sound, variantIndex);
+    final current = _stateForVariant(sound, variantIndex);
+    setState(() {
+      _soundStates[key] = current.copyWith(volume: value.clamp(0, 1));
+    });
+  }
 
   void _toggleVariantPin(WhiteNoiseSound sound, int variantIndex) {
     final key = _variantKey(sound, variantIndex);
@@ -55,16 +64,6 @@ class _SoundsPageState extends State<SoundsPage> {
 
   bool _isVariantPinned(WhiteNoiseSound sound, int variantIndex) =>
       _pinnedVariantIds.contains(_variantKey(sound, variantIndex));
-
-  void _toggleExpanded(WhiteNoiseSound sound) {
-    setState(() {
-      if (_expandedSoundIds.contains(sound.id)) {
-        _expandedSoundIds.remove(sound.id);
-      } else {
-        _expandedSoundIds.add(sound.id);
-      }
-    });
-  }
 
   void _setCategory(String? category) {
     setState(() {
@@ -210,52 +209,40 @@ class _SoundsPageState extends State<SoundsPage> {
   }
 
   Widget _buildSoundTile({required WhiteNoiseSound sound}) {
-    final state = _stateFor(sound);
     final variants = _variantEntries(sound);
-    final hasVariants = variants.length > 1;
-    final isExpanded = hasVariants && _expandedSoundIds.contains(sound.id);
-    final singleVariantPinned = _isVariantPinned(sound, 0);
-
     return Padding(
       key: ValueKey('tile_${sound.id}'),
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SoundCard(
-            sound: sound,
-            volume: state.volume,
-            isPlaying: state.isPlaying,
-            onToggle: () => _toggleSound(sound),
-            onVolumeChanged: (value) => _changeVolume(sound, value),
-            showPinButton: !hasVariants,
-            isPinned: singleVariantPinned,
-            onTogglePin: !hasVariants
-                ? () => _toggleVariantPin(sound, 0)
-                : null,
-            showExpandButton: hasVariants,
-            isExpanded: isExpanded,
-            onToggleExpand: hasVariants ? () => _toggleExpanded(sound) : null,
+          Text(sound.name, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          Column(
+            children: variants.map((entry) {
+              final state = _stateForVariant(entry.sound, entry.variantIndex);
+              final pinned = _isVariantPinned(entry.sound, entry.variantIndex);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SoundCard(
+                  sound: entry.sound,
+                  variant: entry.variant,
+                  volume: state.volume,
+                  isPlaying: state.isPlaying,
+                  onToggle: () =>
+                      _toggleVariant(entry.sound, entry.variantIndex),
+                  onVolumeChanged: (value) => _changeVariantVolume(
+                    entry.sound,
+                    entry.variantIndex,
+                    value,
+                  ),
+                  isPinned: pinned,
+                  onTogglePin: () =>
+                      _toggleVariantPin(entry.sound, entry.variantIndex),
+                ),
+              );
+            }).toList(),
           ),
-          if (hasVariants && isExpanded)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Column(
-                children: variants
-                    .map(
-                      (entry) => _VariantRow(
-                        entry: entry,
-                        isPinned: _isVariantPinned(
-                          entry.sound,
-                          entry.variantIndex,
-                        ),
-                        onTogglePin: () =>
-                            _toggleVariantPin(entry.sound, entry.variantIndex),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
         ],
       ),
     );
@@ -323,7 +310,12 @@ class _PinnedSoundStrip extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
-                    child: Icon(sound.icon, color: Colors.white, size: 30),
+                    child: Center(
+                      child: Text(
+                        label.characters.first,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
                   ),
                   Positioned(
                     right: -6,
@@ -364,45 +356,6 @@ class _PinnedSoundStrip extends StatelessWidget {
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _VariantRow extends StatelessWidget {
-  const _VariantRow({
-    required this.entry,
-    required this.isPinned,
-    required this.onTogglePin,
-  });
-
-  final _SoundVariantEntry entry;
-  final bool isPinned;
-  final VoidCallback onTogglePin;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = entry.variant.name.isNotEmpty
-        ? entry.variant.name
-        : entry.sound.name;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          SoundCardIconButton(
-            icon: isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-            onPressed: onTogglePin,
-          ),
-        ],
       ),
     );
   }
