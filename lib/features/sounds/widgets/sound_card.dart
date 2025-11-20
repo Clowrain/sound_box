@@ -38,16 +38,25 @@ class SoundCard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
+        const double reservedControlWidth = 110;
         void handleDrag(double dx) {
           if (locked) return;
           final ratio = (dx / width).clamp(0, 1).toDouble();
           onVolumeChanged(ratio);
         }
 
+        bool _isInControlZone(double dx) => dx >= width - reservedControlWidth;
+
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onPanDown: (details) => handleDrag(details.localPosition.dx),
-          onPanUpdate: (details) => handleDrag(details.localPosition.dx),
+          onTapDown: (details) {
+            if (_isInControlZone(details.localPosition.dx)) return;
+            handleDrag(details.localPosition.dx);
+          },
+          onHorizontalDragStart: (details) =>
+              handleDrag(details.localPosition.dx),
+          onHorizontalDragUpdate: (details) =>
+              handleDrag(details.localPosition.dx),
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xFF1B1C29),
