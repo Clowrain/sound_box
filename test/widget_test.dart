@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:sound_box/app.dart';
 import 'package:sound_box/data/sound_presets.dart';
 import 'package:sound_box/features/sounds/sounds_page.dart';
+import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 void main() {
@@ -37,8 +38,13 @@ void main() {
   testWidgets('sounds page renders sound list', (tester) async {
     final sounds = await loadWhiteNoiseSounds();
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => SoundSelectionState(initialOrder: sounds),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => SoundSelectionState(initialOrder: sounds),
+          ),
+          ChangeNotifierProvider(create: (_) => PinnedSoundsState()),
+        ],
         child: const MaterialApp(home: SoundsPage()),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/models/white_noise_sound.dart';
+import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 import 'widgets/sound_card.dart';
@@ -14,7 +15,6 @@ class SoundsPage extends StatefulWidget {
 
 class _SoundsPageState extends State<SoundsPage> {
   final Map<String, WhiteNoiseSoundState> _soundStates = {};
-  final Set<String> _pinnedVariantIds = <String>{};
   String? _activeCategory;
 
   String _variantKey(WhiteNoiseSound sound, int variantIndex) =>
@@ -53,17 +53,8 @@ class _SoundsPageState extends State<SoundsPage> {
 
   void _toggleVariantPin(WhiteNoiseSound sound, int variantIndex) {
     final key = _variantKey(sound, variantIndex);
-    setState(() {
-      if (_pinnedVariantIds.contains(key)) {
-        _pinnedVariantIds.remove(key);
-      } else {
-        _pinnedVariantIds.add(key);
-      }
-    });
+    context.read<PinnedSoundsState>().toggle(key);
   }
-
-  bool _isVariantPinned(WhiteNoiseSound sound, int variantIndex) =>
-      _pinnedVariantIds.contains(_variantKey(sound, variantIndex));
 
   void _setCategory(String? category) {
     setState(() {
@@ -109,18 +100,31 @@ class _SoundsPageState extends State<SoundsPage> {
     );
   }
 
-  List<_SoundVariantEntry> _resolvePinnedVariants(
+  List<_SoundVariantEntry> _pinnedEntriesFor(
+    List<String> keys,
     List<WhiteNoiseSound> sounds,
   ) {
-    final result = <_SoundVariantEntry>[];
-    for (final sound in sounds) {
-      for (final entry in _variantEntries(sound)) {
-        if (_isVariantPinned(sound, entry.variantIndex)) {
-          result.add(entry);
-        }
-      }
+    final soundMap = {for (final sound in sounds) sound.id: sound};
+    final entries = <_SoundVariantEntry>[];
+    for (final key in keys) {
+      final entry = _entryFromKey(key, soundMap);
+      if (entry != null) entries.add(entry);
     }
-    return result;
+    return entries;
+  }
+
+  _SoundVariantEntry? _entryFromKey(
+    String key,
+    Map<String, WhiteNoiseSound> soundMap,
+  ) {
+    final parts = key.split('::');
+    if (parts.length != 2) return null;
+    final sound = soundMap[parts[0]];
+    if (sound == null) return null;
+    final index = int.tryParse(parts[1]) ?? 0;
+    final entries = _variantEntries(sound);
+    if (index < 0 || index >= entries.length) return null;
+    return entries[index];
   }
 
   void _handlePinnedVariantTap(_SoundVariantEntry entry) {
@@ -130,10 +134,14 @@ class _SoundsPageState extends State<SoundsPage> {
   @override
   Widget build(BuildContext context) {
     final selection = context.watch<SoundSelectionState>();
+    final pinnedState = context.watch<PinnedSoundsState>();
     final orderedSounds = selection.sounds;
     final categoryOptions = _categoryOptionsFor(orderedSounds);
     final filteredSounds = _applyCategoryFilter(orderedSounds);
-    final pinnedVariants = _resolvePinnedVariants(orderedSounds);
+    final pinnedVariants = _pinnedEntriesFor(
+      pinnedState.pinnedKeys,
+      orderedSounds,
+    );
     final showFilterEmptyState = filteredSounds.isEmpty;
 
     return Scaffold(
@@ -193,7 +201,10 @@ class _SoundsPageState extends State<SoundsPage> {
                     : SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final sound = filteredSounds[index];
-                          return _buildSoundTile(sound: sound);
+                          return _buildSoundTile(
+                            sound: sound,
+                            pinnedState: pinnedState,
+                          );
                         }, childCount: filteredSounds.length),
                       ),
               ),
@@ -210,7 +221,10 @@ class _SoundsPageState extends State<SoundsPage> {
     );
   }
 
-  Widget _buildSoundTile({required WhiteNoiseSound sound}) {
+  Widget _buildSoundTile({
+    required WhiteNoiseSound sound,
+    required PinnedSoundsState pinnedState,
+  }) {
     final variants = _variantEntries(sound);
     return Padding(
       key: ValueKey('tile_${sound.id}'),
@@ -223,7 +237,9 @@ class _SoundsPageState extends State<SoundsPage> {
           Column(
             children: variants.map((entry) {
               final state = _stateForVariant(entry.sound, entry.variantIndex);
-              final pinned = _isVariantPinned(entry.sound, entry.variantIndex);
+              final pinned = pinnedState.isPinned(
+                _variantKey(entry.sound, entry.variantIndex),
+              );
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: SoundCard(

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sound_box/app.dart';
 import 'package:sound_box/features/home/widgets/dot_matrix_clock.dart';
 import 'package:sound_box/models/white_noise_sound.dart';
+import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,6 +51,43 @@ class _HomePageState extends State<HomePage> {
     Navigator.of(context).pushNamed(SoundRoutes.sounds);
   }
 
+  List<_HomePinnedEntry> _pinnedEntriesForHome(
+    List<String> keys,
+    List<WhiteNoiseSound> sounds,
+  ) {
+    final soundMap = {for (final sound in sounds) sound.id: sound};
+    final entries = <_HomePinnedEntry>[];
+    for (final key in keys) {
+      final entry = _entryFromKey(key, soundMap);
+      if (entry != null) entries.add(entry);
+    }
+    return entries;
+  }
+
+  _HomePinnedEntry? _entryFromKey(
+    String key,
+    Map<String, WhiteNoiseSound> soundMap,
+  ) {
+    final parts = key.split('::');
+    if (parts.length != 2) return null;
+    final sound = soundMap[parts[0]];
+    if (sound == null) return null;
+    final index = int.tryParse(parts[1]) ?? 0;
+    final variants = _variantsForSound(sound);
+    if (index < 0 || index >= variants.length) return null;
+    return _HomePinnedEntry(
+      sound: sound,
+      variant: variants[index],
+      variantIndex: index,
+    );
+  }
+
+  List<WhiteNoiseSoundVariant> _variantsForSound(WhiteNoiseSound sound) {
+    return sound.variants.isNotEmpty
+        ? sound.variants
+        : [WhiteNoiseSoundVariant(name: sound.name, path: '')];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +104,12 @@ class _HomePageState extends State<HomePage> {
             child: OrientationBuilder(
               builder: (context, orientation) {
                 final selection = context.watch<SoundSelectionState>();
+                final pinnedState = context.watch<PinnedSoundsState>();
                 final featured = selection.primary(8);
+                final pinnedEntries = _pinnedEntriesForHome(
+                  pinnedState.pinnedKeys,
+                  selection.sounds,
+                );
                 final isPortrait = orientation == Orientation.portrait;
                 return Container(
                   margin: const EdgeInsets.all(16),
@@ -96,12 +139,14 @@ class _HomePageState extends State<HomePage> {
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           fallbackIcons: _fallbackIcons,
+                          pinnedEntries: pinnedEntries,
                         )
                       : _LandscapeLayout(
                           now: _now,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           fallbackIcons: _fallbackIcons,
+                          pinnedEntries: pinnedEntries,
                         ),
                 );
               },
@@ -119,12 +164,14 @@ class _PortraitLayout extends StatelessWidget {
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.fallbackIcons,
+    required this.pinnedEntries,
   });
 
   final DateTime now;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
   final List<IconData> fallbackIcons;
+  final List<_HomePinnedEntry> pinnedEntries;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +196,8 @@ class _PortraitLayout extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+        _PinnedPreviewBar(entries: pinnedEntries),
       ],
     );
   }
@@ -160,12 +209,14 @@ class _LandscapeLayout extends StatelessWidget {
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.fallbackIcons,
+    required this.pinnedEntries,
   });
 
   final DateTime now;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
   final List<IconData> fallbackIcons;
+  final List<_HomePinnedEntry> pinnedEntries;
 
   @override
   Widget build(BuildContext context) {
@@ -218,10 +269,18 @@ class _LandscapeLayout extends StatelessWidget {
         ),
         const SizedBox(width: 24),
         Expanded(
-          child: _QuickSoundGrid(
-            sounds: featuredSounds,
-            fallback: fallbackIcons,
-            crossAxisCount: 2,
+          child: Column(
+            children: [
+              Expanded(
+                child: _QuickSoundGrid(
+                  sounds: featuredSounds,
+                  fallback: fallbackIcons,
+                  crossAxisCount: 2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _PinnedPreviewBar(entries: pinnedEntries),
+            ],
           ),
         ),
       ],
@@ -340,6 +399,87 @@ class _QuickSoundGrid extends StatelessWidget {
               .toList(),
         );
       },
+    );
+  }
+}
+
+class _PinnedPreviewBar extends StatelessWidget {
+  const _PinnedPreviewBar({required this.entries});
+
+  final List<_HomePinnedEntry> entries;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = Colors.white.withValues(alpha: 0.08);
+    final bgColor = Colors.white.withValues(alpha: 0.03);
+
+    if (entries.isEmpty) {
+      return Container(
+        height: 70,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: borderColor),
+        ),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          '固定音色会显示在这里，便于快速启动',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withValues(alpha: 0.65),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: 70,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderColor),
+      ),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: entries.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final entry = entries[index];
+          final label = entry.variant.name.isNotEmpty
+              ? entry.variant.name
+              : entry.sound.name;
+          return SizedBox(
+            width: 52,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.15),
+                    ),
+                  ),
+                  child: Icon(entry.sound.icon, color: Colors.white, size: 18),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.labelSmall,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -515,6 +655,18 @@ class _SquareButtonState extends State<_SquareButton> {
       ),
     );
   }
+}
+
+class _HomePinnedEntry {
+  const _HomePinnedEntry({
+    required this.sound,
+    required this.variant,
+    required this.variantIndex,
+  });
+
+  final WhiteNoiseSound sound;
+  final WhiteNoiseSoundVariant variant;
+  final int variantIndex;
 }
 
 class _SidePill extends StatelessWidget {

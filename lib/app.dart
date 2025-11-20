@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sound_box/features/home/home_page.dart';
 import 'package:sound_box/features/sounds/sounds_page.dart';
 import 'package:sound_box/models/white_noise_sound.dart';
+import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 
 class SoundRoutes {
@@ -29,8 +30,13 @@ class SoundBoxApp extends StatelessWidget {
       fontFamily: 'NotoSansSC',
     );
 
-    return ChangeNotifierProvider(
-      create: (_) => SoundSelectionState(initialOrder: initialSounds),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SoundSelectionState(initialOrder: initialSounds),
+        ),
+        ChangeNotifierProvider(create: (_) => PinnedSoundsState()),
+      ],
       child: MaterialApp(
         title: 'Sound Box',
         debugShowCheckedModeBanner: false,
