@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sound_box/app.dart';
+import 'package:sound_box/core/router/sound_routes.dart';
 import 'package:sound_box/features/home/widgets/home_layouts.dart';
-import 'package:sound_box/state/pinned_sounds_state.dart';
-import 'package:sound_box/state/sound_selection_state.dart';
-import 'package:sound_box/utils/pinned_variant_resolver.dart';
+import 'package:sound_box/shared/state/pinned_sounds_state.dart';
+import 'package:sound_box/shared/state/sound_selection_state.dart';
+import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 应用首页，负责时钟刷新与精选音效入口。
 class HomePage extends StatefulWidget {

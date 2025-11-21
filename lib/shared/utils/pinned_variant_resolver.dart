@@ -1,4 +1,4 @@
-import 'package:sound_box/models/white_noise_sound.dart';
+import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 
 class PinnedVariantEntry {
   const PinnedVariantEntry({

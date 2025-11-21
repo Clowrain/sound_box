@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sound_box/models/white_noise_sound.dart';
-import 'package:sound_box/utils/pinned_variant_resolver.dart';
+import 'package:sound_box/domain/sounds/white_noise_sound.dart';
+import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 首页主要操作区，包括入口按钮和快捷音效网格。
 class HomePrimaryActions extends StatelessWidget {

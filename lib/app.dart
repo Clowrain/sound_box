@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sound_box/core/router/sound_routes.dart';
+import 'package:sound_box/core/theme/app_theme.dart';
+import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 import 'package:sound_box/features/home/home_page.dart';
 import 'package:sound_box/features/sounds/sounds_page.dart';
-import 'package:sound_box/models/white_noise_sound.dart';
-import 'package:sound_box/state/pinned_sounds_state.dart';
-import 'package:sound_box/state/sound_selection_state.dart';
-
-class SoundRoutes {
-  static const home = '/';
-  static const sounds = '/sounds';
-}
+import 'package:sound_box/shared/state/pinned_sounds_state.dart';
+import 'package:sound_box/shared/state/sound_selection_state.dart';
 
 class SoundBoxApp extends StatelessWidget {
   const SoundBoxApp({super.key, required this.initialSounds});
@@ -18,17 +15,7 @@ class SoundBoxApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const scheme = ColorScheme.dark(
-      primary: Color(0xFFB0B6FF),
-      secondary: Color(0xFFFFCE6A),
-      surface: Color(0xFF0E111A),
-    );
-
-    final baseTheme = ThemeData(
-      colorScheme: scheme,
-      useMaterial3: true,
-      fontFamily: 'NotoSansSC',
-    );
+    final theme = buildAppTheme();
 
     return MultiProvider(
       providers: [
@@ -40,13 +27,7 @@ class SoundBoxApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Sound Box',
         debugShowCheckedModeBanner: false,
-        theme: baseTheme.copyWith(
-          scaffoldBackgroundColor: scheme.surface,
-          textTheme: baseTheme.textTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-        ),
+        theme: theme,
         initialRoute: SoundRoutes.home,
         routes: {
           SoundRoutes.home: (_) => const HomePage(),
