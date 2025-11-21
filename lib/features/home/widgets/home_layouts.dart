@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sound_box/features/home/widgets/display_surface.dart';
 import 'package:sound_box/features/home/widgets/home_controls.dart';
+import 'package:sound_box/features/home/widgets/home_side_pill.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
@@ -131,40 +132,6 @@ class HomeLandscapeLayout extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// 右侧胶囊按钮容器。
-class HomeSidePill extends StatelessWidget {
-  const HomeSidePill({super.key, this.child, this.height = 110, this.onTap});
-
-  final Widget? child;
-  final double height;
-  final VoidCallback? onTap;
-  static const double _width = 70;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Ink(
-          width: _width,
-          height: height,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1B1F2C).withValues(alpha: 0.65),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.black.withValues(alpha: 0.45),
-              width: 2,
-            ),
-          ),
-          child: Center(child: child),
-        ),
-      ),
     );
   }
 }
