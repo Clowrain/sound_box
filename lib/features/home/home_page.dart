@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/app.dart';
 import 'package:sound_box/features/home/widgets/dot_matrix_clock.dart';
@@ -387,7 +386,7 @@ class _GridItem {
   final String label;
 }
 
-class _SquareButton extends StatefulWidget {
+class _SquareButton extends StatelessWidget {
   const _SquareButton({this.icon, this.label, this.onTap});
 
   final IconData? icon;
@@ -395,86 +394,19 @@ class _SquareButton extends StatefulWidget {
   final VoidCallback? onTap;
 
   @override
-  State<_SquareButton> createState() => _SquareButtonState();
-}
-
-class _SquareButtonState extends State<_SquareButton> {
-  static final _GlobalBreathTicker _breathSignal = _GlobalBreathTicker.instance;
-  VoidCallback? _breathListener;
-  bool _isPressed = false;
-  bool _isActive = false;
-  double _breathValue = 0;
-  bool get _isIconOnly => (widget.label == null) || widget.label!.isEmpty;
-
-  @override
-  void initState() {
-    super.initState();
-    _breathValue = _breathSignal.value;
-    _breathListener = () {
-      if (!_isActive) return;
-      setState(() {
-        _breathValue = _breathSignal.value;
-      });
-    };
-    _breathSignal.addListener(_breathListener!);
-  }
-
-  @override
-  void dispose() {
-    _breathSignal.removeListener(_breathListener!);
-    super.dispose();
-  }
-
-  void _handleTap() {
-    setState(() {
-      _isActive = !_isActive;
-      _breathValue = _breathSignal.value;
-    });
-    widget.onTap?.call();
-  }
-
-  void _handleTapDown(TapDownDetails _) {
-    setState(() => _isPressed = true);
-  }
-
-  void _handleTapEnd([TapUpDetails? _]) {
-    if (_isPressed) {
-      setState(() => _isPressed = false);
-    }
-  }
-
-  Color _iconColor(double glowStrength) {
-    if (!_isIconOnly) return Colors.white;
-    if (!_isActive) {
-      return Colors.black;
-    }
-    const glow = Color(0xFFFFF4C9);
-    return Color.lerp(Colors.black, glow, glowStrength.clamp(0, 1)) ??
-        Colors.black;
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double glowStrength = _isActive ? _breathValue : 0;
-    final iconColor = _iconColor(glowStrength);
-    final bool showText = !_isIconOnly;
-    final double elevation = _isPressed ? 4 : 10;
+    final bool isIconOnly = (label == null) || label!.isEmpty;
+    final Color iconColor = isIconOnly ? Colors.black : Colors.white;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: _handleTap,
-        onTapDown: _handleTapDown,
-        onTapCancel: _handleTapEnd,
-        onTapUp: _handleTapEnd,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOut,
-          transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
+        child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
@@ -486,16 +418,16 @@ class _SquareButtonState extends State<_SquareButton> {
               color: Colors.black.withValues(alpha: 0.55),
               width: 2,
             ),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.7),
-                offset: Offset(0, elevation),
-                blurRadius: elevation * 1.8,
+                color: Colors.black54,
+                offset: Offset(0, 10),
+                blurRadius: 18,
                 spreadRadius: -2,
               ),
               BoxShadow(
-                color: const Color(0x3329394D),
-                offset: const Offset(-2, -2),
+                color: Color(0x3329394D),
+                offset: Offset(-2, -2),
                 blurRadius: 8,
               ),
             ],
@@ -504,43 +436,29 @@ class _SquareButtonState extends State<_SquareButton> {
             margin: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: _isPressed
-                    ? const [Color(0xFF1A1F2C), Color(0xFF131722)]
-                    : const [Color(0xFF232838), Color(0xFF171C28)],
+                colors: [Color(0xFF232838), Color(0xFF171C28)],
               ),
               border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
             ),
             child: Center(
-              child: _isIconOnly
-                  ? _BreathingIcon(
-                      icon: widget.icon,
-                      color: iconColor,
-                      size: 24,
-                      intensity: glowStrength,
-                    )
+              child: isIconOnly
+                  ? Icon(icon, color: iconColor, size: 24)
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _BreathingIcon(
-                          icon: widget.icon,
-                          color: iconColor,
-                          size: 22,
-                          intensity: glowStrength,
-                        ),
-                        if (showText) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            widget.label!,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: Colors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Icon(icon, color: iconColor, size: 22),
+                        const SizedBox(height: 6),
+                        Text(
+                          label!,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: Colors.white,
                           ),
-                        ],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
             ),
@@ -581,102 +499,5 @@ class _SidePill extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _BreathingIcon extends StatelessWidget {
-  const _BreathingIcon({
-    required this.icon,
-    required this.color,
-    required this.size,
-    required this.intensity,
-  });
-
-  final IconData? icon;
-  final Color color;
-  final double size;
-  final double intensity;
-
-  @override
-  Widget build(BuildContext context) {
-    final double glow = intensity.clamp(0, 1);
-    final double blur = 8 + 12 * glow;
-    final double spread = 0.5 + 2 * glow;
-    final double hazeSize = size;
-    final Color hazeColor =
-        const Color(0xFFFFF4C9).withValues(alpha: 0.05 + 0.25 * glow);
-    final Color litIconColor =
-        Color.lerp(color, const Color(0xFFFFF4C9), glow * 0.6) ?? color;
-    final double scale = 1 + glow * 0.08;
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        if (glow > 0)
-          Container(
-            width: hazeSize,
-            height: hazeSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: hazeColor,
-                  blurRadius: blur,
-                  spreadRadius: spread,
-                ),
-              ],
-              gradient: RadialGradient(
-                colors: [
-                  hazeColor,
-                  hazeColor.withValues(alpha: 0.04),
-                  Colors.transparent,
-                ],
-                stops: const [0, 0.85, 1],
-              ),
-            ),
-          ),
-        Transform.scale(
-          scale: scale,
-          child: Icon(icon, color: litIconColor, size: size),
-        ),
-      ],
-    );
-  }
-}
-
-class _GlobalBreathTicker extends ChangeNotifier {
-  _GlobalBreathTicker._() {
-    _ticker = Ticker(_handleTick);
-  }
-
-  static final _GlobalBreathTicker instance = _GlobalBreathTicker._();
-
-  static const int _periodMs = 2400;
-  late final Ticker _ticker;
-  double value = 0;
-
-  @override
-  void addListener(VoidCallback listener) {
-    final hadListeners = hasListeners;
-    super.addListener(listener);
-    if (!hadListeners && !_ticker.isActive) {
-      _ticker.start();
-    }
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    super.removeListener(listener);
-    if (!hasListeners) {
-      _ticker.stop();
-    }
-  }
-
-  void _handleTick(Duration elapsed) {
-    final int ms = elapsed.inMilliseconds % _periodMs;
-    final double progress = ms / _periodMs;
-    final double mirrored = progress <= 0.5 ? progress * 2 : (1 - progress) * 2;
-    value = Curves.easeInOut.transform(mirrored);
-    notifyListeners();
   }
 }
