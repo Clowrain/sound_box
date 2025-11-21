@@ -1,15 +1,14 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/app.dart';
-import 'package:sound_box/features/home/widgets/dot_matrix_clock.dart';
-import 'package:sound_box/models/white_noise_sound.dart';
+import 'package:sound_box/features/home/widgets/home_layouts.dart';
 import 'package:sound_box/state/pinned_sounds_state.dart';
 import 'package:sound_box/state/sound_selection_state.dart';
 import 'package:sound_box/utils/pinned_variant_resolver.dart';
 
+/// 应用首页，负责时钟刷新与精选音效入口。
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -24,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    // 用独立通知器驱动时钟，避免整页 setState 产生额外重建。
     _nowNotifier = ValueNotifier(DateTime.now());
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       _nowNotifier.value = DateTime.now();
@@ -64,36 +64,17 @@ class _HomePageState extends State<HomePage> {
                   selection.sounds,
                 );
                 final isPortrait = orientation == Orientation.portrait;
-                return Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(20),
-                  constraints: BoxConstraints(
-                    maxWidth: isPortrait ? 420 : 1000,
-                    maxHeight: isPortrait ? 720 : 520,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF3A4459), Color(0xFF2B3042)],
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 40,
-                        offset: Offset(0, 20),
-                      ),
-                    ],
-                  ),
+
+                return _HomeSurfaceCard(
+                  isPortrait: isPortrait,
                   child: isPortrait
-                      ? _PortraitLayout(
+                      ? HomePortraitLayout(
                           nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           pinnedEntries: pinnedEntries,
                         )
-                      : _LandscapeLayout(
+                      : HomeLandscapeLayout(
                           nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
@@ -109,395 +90,38 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _PortraitLayout extends StatelessWidget {
-  const _PortraitLayout({
-    required this.nowListenable,
-    required this.onPrimaryAction,
-    required this.featuredSounds,
-    required this.pinnedEntries,
-  });
+/// 统一的卡片容器，处理尺寸限制与投影。
+class _HomeSurfaceCard extends StatelessWidget {
+  const _HomeSurfaceCard({required this.isPortrait, required this.child});
 
-  final ValueListenable<DateTime> nowListenable;
-  final VoidCallback onPrimaryAction;
-  final List<WhiteNoiseSound> featuredSounds;
-  final List<PinnedVariantEntry> pinnedEntries;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                flex: 4,
-                child: _DisplaySurface(nowListenable: nowListenable),
-              ),
-              const SizedBox(height: 16),
-              _PrimaryActions(onPrimaryAction: onPrimaryAction),
-              const SizedBox(height: 12),
-              Expanded(
-                flex: 3,
-                child: _QuickSoundGrid(
-                  sounds: featuredSounds,
-                  pinnedEntries: pinnedEntries,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LandscapeLayout extends StatelessWidget {
-  const _LandscapeLayout({
-    required this.nowListenable,
-    required this.onPrimaryAction,
-    required this.featuredSounds,
-    required this.pinnedEntries,
-  });
-
-  final ValueListenable<DateTime> nowListenable;
-  final VoidCallback onPrimaryAction;
-  final List<WhiteNoiseSound> featuredSounds;
-  final List<PinnedVariantEntry> pinnedEntries;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 70,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              const gap = 12.0;
-              final availableHeight = constraints.maxHeight.isFinite
-                  ? constraints.maxHeight
-                  : 330;
-              final pillHeight = ((availableHeight - gap * 2) / 3)
-                  .clamp(72.0, 110.0)
-                  .toDouble();
-
-              return Column(
-                children: [
-                  _SidePill(
-                    height: pillHeight,
-                    onTap: onPrimaryAction,
-                    child: const Icon(
-                      Icons.graphic_eq,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(height: gap),
-                  _SidePill(
-                    height: pillHeight,
-                    child: Icon(Icons.settings, color: Colors.white70),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 24),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: _DisplaySurface(
-                  nowListenable: nowListenable,
-                  minRows: 10,
-                  minColumns: 28,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 24),
-        Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: _QuickSoundGrid(
-                  sounds: featuredSounds,
-                  crossAxisCount: 2,
-                  pinnedEntries: pinnedEntries,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _DisplaySurface extends StatelessWidget {
-  const _DisplaySurface({
-    required this.nowListenable,
-    this.minRows = 14,
-    this.minColumns = 20,
-  });
-
-  final ValueListenable<DateTime> nowListenable;
-  final int minRows;
-  final int minColumns;
+  final bool isPortrait;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
+      constraints: BoxConstraints(
+        maxWidth: isPortrait ? 420 : 1000,
+        maxHeight: isPortrait ? 720 : 520,
+      ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: Colors.black.withValues(alpha: 0.35),
-          width: 4,
+        borderRadius: BorderRadius.circular(32),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF3A4459), Color(0xFF2B3042)],
         ),
-        color: const Color(0xFF2D3344),
         boxShadow: const [
           BoxShadow(
             color: Colors.black54,
-            blurRadius: 20,
-            offset: Offset(0, 12),
+            blurRadius: 40,
+            offset: Offset(0, 20),
           ),
-          BoxShadow(color: Color(0x3310111A), blurRadius: 40, spreadRadius: 8),
         ],
       ),
-      child: RepaintBoundary(
-        child: ValueListenableBuilder<DateTime>(
-          valueListenable: nowListenable,
-          builder: (_, now, __) {
-            return DotMatrixClock(
-              time: now,
-              minRows: minRows,
-              minColumns: minColumns,
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _PrimaryActions extends StatelessWidget {
-  const _PrimaryActions({required this.onPrimaryAction});
-
-  final VoidCallback onPrimaryAction;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _SquareButton(
-            label: '音效',
-            icon: Icons.graphic_eq,
-            onTap: onPrimaryAction,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _SquareButton(
-            label: '设置',
-            icon: Icons.settings_outlined,
-            onTap: onPrimaryAction,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _QuickSoundGrid extends StatelessWidget {
-  const _QuickSoundGrid({
-    required this.sounds,
-    this.crossAxisCount = 3,
-    this.pinnedEntries = const [],
-  });
-
-  final List<WhiteNoiseSound> sounds;
-  final int crossAxisCount;
-  final List<PinnedVariantEntry> pinnedEntries;
-
-  @override
-  Widget build(BuildContext context) {
-    final items = _gridItems();
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const targetSize = 72.0;
-        const gap = 12.0;
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : 320.0;
-        final computedCrossAxisCount = (availableWidth / (targetSize + gap))
-            .floor()
-            .clamp(crossAxisCount, 6);
-
-        return GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: computedCrossAxisCount,
-            childAspectRatio: 1,
-            mainAxisSpacing: gap,
-            crossAxisSpacing: gap,
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return _SquareButton(
-              icon: item.icon,
-              label: item.label,
-              onTap: () {},
-            );
-          },
-        );
-      },
-    );
-  }
-
-  List<_GridItem> _gridItems() {
-    if (pinnedEntries.isNotEmpty) {
-      return pinnedEntries
-          .map(
-            (entry) => _GridItem(
-              icon: entry.sound.icon,
-              label: entry.variant.name.isNotEmpty
-                  ? entry.variant.name
-                  : entry.sound.name,
-            ),
-          )
-          .toList();
-    }
-    return sounds
-        .map((sound) => _GridItem(icon: sound.icon, label: sound.name))
-        .toList();
-  }
-}
-
-class _GridItem {
-  const _GridItem({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-}
-
-class _SquareButton extends StatelessWidget {
-  const _SquareButton({this.icon, this.label, this.onTap});
-
-  final IconData? icon;
-  final String? label;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bool isIconOnly = (label == null) || label!.isEmpty;
-    final Color iconColor = isIconOnly ? Colors.black : Colors.white;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF2E3548), Color(0xFF171C28)],
-            ),
-            border: Border.all(
-              color: Colors.black.withValues(alpha: 0.55),
-              width: 2,
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black54,
-                offset: Offset(0, 10),
-                blurRadius: 18,
-                spreadRadius: -2,
-              ),
-              BoxShadow(
-                color: Color(0x3329394D),
-                offset: Offset(-2, -2),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: Container(
-            margin: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF232838), Color(0xFF171C28)],
-              ),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-            ),
-            child: Center(
-              child: isIconOnly
-                  ? Icon(icon, color: iconColor, size: 24)
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(icon, color: iconColor, size: 22),
-                        const SizedBox(height: 6),
-                        Text(
-                          label!,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SidePill extends StatelessWidget {
-  const _SidePill({this.child, this.height = 110, this.onTap});
-
-  final Widget? child;
-  final double height;
-  final VoidCallback? onTap;
-  static const double _width = 70;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Ink(
-          width: _width,
-          height: height,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1B1F2C).withValues(alpha: 0.65),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.black.withValues(alpha: 0.45),
-              width: 2,
-            ),
-          ),
-          child: Center(child: child),
-        ),
-      ),
+      child: child,
     );
   }
 }
