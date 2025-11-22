@@ -14,12 +14,18 @@ class HomePortraitLayout extends StatelessWidget {
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.pinnedEntries,
+    required this.breathingProgress,
+    required this.activeBreathingIds,
+    required this.onBreathingChanged,
   });
 
   final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
   final List<PinnedVariantEntry> pinnedEntries;
+  final Animation<double>? breathingProgress;
+  final Set<String> activeBreathingIds;
+  final void Function(String id, bool active) onBreathingChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +40,21 @@ class HomePortraitLayout extends StatelessWidget {
                 child: HomeDisplaySurface(nowListenable: nowListenable),
               ),
               const SizedBox(height: 16),
-              HomePrimaryActions(onSoundTap: onPrimaryAction),
+              HomePrimaryActions(
+                onSoundTap: onPrimaryAction,
+                breathingProgress: breathingProgress,
+                activeBreathingIds: activeBreathingIds,
+                onBreathingChanged: onBreathingChanged,
+              ),
               const SizedBox(height: 12),
               Expanded(
                 flex: 3,
                 child: QuickSoundGrid(
                   sounds: featuredSounds,
                   pinnedEntries: pinnedEntries,
+                  breathingProgress: breathingProgress,
+                  activeBreathingIds: activeBreathingIds,
+                  onBreathingChanged: onBreathingChanged,
                 ),
               ),
             ],
@@ -58,12 +72,18 @@ class HomeLandscapeLayout extends StatelessWidget {
     required this.onPrimaryAction,
     required this.featuredSounds,
     required this.pinnedEntries,
+    required this.breathingProgress,
+    required this.activeBreathingIds,
+    required this.onBreathingChanged,
   });
 
   final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
   final List<PinnedVariantEntry> pinnedEntries;
+  final Animation<double>? breathingProgress;
+  final Set<String> activeBreathingIds;
+  final void Function(String id, bool active) onBreathingChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +146,9 @@ class HomeLandscapeLayout extends StatelessWidget {
                   sounds: featuredSounds,
                   crossAxisCount: 2,
                   pinnedEntries: pinnedEntries,
+                  breathingProgress: breathingProgress,
+                  activeBreathingIds: activeBreathingIds,
+                  onBreathingChanged: onBreathingChanged,
                 ),
               ),
             ],

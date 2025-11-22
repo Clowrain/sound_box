@@ -10,11 +10,17 @@ class QuickSoundGrid extends StatelessWidget {
     required this.sounds,
     this.crossAxisCount = 3,
     this.pinnedEntries = const [],
+    this.breathingProgress,
+    this.activeBreathingIds = const {},
+    this.onBreathingChanged,
   });
 
   final List<WhiteNoiseSound> sounds;
   final int crossAxisCount;
   final List<PinnedVariantEntry> pinnedEntries;
+  final Animation<double>? breathingProgress;
+  final Set<String> activeBreathingIds;
+  final void Function(String id, bool active)? onBreathingChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +48,16 @@ class QuickSoundGrid extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
+            final itemId = 'quick_${index}_${item.label}';
             return HomeSquareButton(
               icon: item.icon,
               label: item.label,
               onTap: () {},
+              breathingProgress: breathingProgress,
+              iconColor: item.color,
+              isBreathing: activeBreathingIds.contains(itemId),
+              onBreathingChanged: (active) =>
+                  onBreathingChanged?.call(itemId, active),
             );
           },
         );
@@ -63,12 +75,19 @@ class QuickSoundGrid extends StatelessWidget {
               label: entry.variant.name.isNotEmpty
                   ? entry.variant.name
                   : entry.sound.name,
+              color: entry.variant.color ?? entry.sound.color,
             ),
           )
           .toList();
     }
     return sounds
-        .map((sound) => _GridItem(icon: sound.icon, label: sound.name))
+        .map(
+          (sound) => _GridItem(
+            icon: sound.icon,
+            label: sound.name,
+            color: sound.color,
+          ),
+        )
         .toList();
   }
 }
@@ -81,8 +100,9 @@ int _resolveCrossAxisCount(double width, {int min = 3, int max = 6}) {
 }
 
 class _GridItem {
-  const _GridItem({required this.icon, required this.label});
+  const _GridItem({required this.icon, required this.label, this.color});
 
   final IconData icon;
   final String label;
+  final Color? color;
 }

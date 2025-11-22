@@ -40,7 +40,13 @@ List<PinnedVariantEntry> variantEntriesForSound(WhiteNoiseSound sound) {
 List<WhiteNoiseSoundVariant> _effectiveVariants(WhiteNoiseSound sound) {
   return sound.variants.isNotEmpty
       ? sound.variants
-      : [WhiteNoiseSoundVariant(name: sound.name, path: '')];
+      : [
+          WhiteNoiseSoundVariant(
+            name: sound.name,
+            path: '',
+            color: sound.color,
+          ),
+        ];
 }
 
 PinnedVariantEntry? _entryFromKey(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/core/router/sound_routes.dart';
+import 'package:sound_box/features/home/widgets/breathing_light_icon.dart';
 import 'package:sound_box/features/home/widgets/home_layouts.dart';
 import 'package:sound_box/shared/state/pinned_sounds_state.dart';
 import 'package:sound_box/shared/state/sound_selection_state.dart';
@@ -16,9 +17,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late final ValueNotifier<DateTime> _nowNotifier;
   Timer? _ticker;
+  late final AnimationController _breathingController;
+  late final Animation<double> _breathingProgress;
+  final Set<String> _activeBreathingIds = {};
 
   @override
   void initState() {
@@ -28,17 +33,51 @@ class _HomePageState extends State<HomePage> {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       _nowNotifier.value = DateTime.now();
     });
+    _breathingController = AnimationController(
+      vsync: this,
+      duration: kBreathingLightDuration,
+    );
+    _breathingProgress = CurvedAnimation(
+      parent: _breathingController,
+      curve: Curves.easeInOutSine,
+    );
   }
 
   @override
   void dispose() {
     _ticker?.cancel();
     _nowNotifier.dispose();
+    _breathingController.dispose();
     super.dispose();
   }
 
   void _openSounds() {
     Navigator.of(context).pushNamed(SoundRoutes.sounds);
+  }
+
+  void _toggleBreathing(String id, bool active) {
+    final hadAny = _activeBreathingIds.isNotEmpty;
+    setState(() {
+      if (active) {
+        _activeBreathingIds.add(id);
+      } else {
+        _activeBreathingIds.remove(id);
+      }
+    });
+
+    final hasAnyActive = _activeBreathingIds.isNotEmpty;
+    if (!hadAny && hasAnyActive) {
+      // 第一个按钮按下，启动统一动画，从当前进度继续。
+      _startBreathingFromCurrent();
+    } else if (!hasAnyActive && _breathingController.isAnimating) {
+      // 所有按钮关闭时停止动画，保留当前 value 以便下次继续。
+      _breathingController.stop(canceled: false);
+    }
+  }
+
+  void _startBreathingFromCurrent() {
+    final start = _breathingController.value.clamp(0.0, 0.99);
+    _breathingController.repeat(reverse: true, min: start.toDouble());
   }
 
   @override
@@ -73,12 +112,18 @@ class _HomePageState extends State<HomePage> {
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           pinnedEntries: pinnedEntries,
+                          breathingProgress: _breathingProgress,
+                          activeBreathingIds: _activeBreathingIds,
+                          onBreathingChanged: _toggleBreathing,
                         )
                       : HomeLandscapeLayout(
                           nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
                           pinnedEntries: pinnedEntries,
+                          breathingProgress: _breathingProgress,
+                          activeBreathingIds: _activeBreathingIds,
+                          onBreathingChanged: _toggleBreathing,
                         ),
                 );
               },

@@ -1,23 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:sound_box/features/home/widgets/breathing_light_icon.dart';
 
-/// 方形操作按钮，支持纯图标或图标+文字，便于多端统一皮肤和点击反馈。
+/// 方形操作按钮，支持纯图标或图标+文字，点击后独立开启/关闭动画，仍共享同一动画值。
 class HomeSquareButton extends StatelessWidget {
-  const HomeSquareButton({super.key, this.icon, this.label, this.onTap});
+  const HomeSquareButton({
+    super.key,
+    this.icon,
+    this.label,
+    this.onTap,
+    this.breathingProgress,
+    this.iconColor,
+    this.isBreathing = false,
+    this.onBreathingChanged,
+  });
 
   final IconData? icon;
   final String? label;
   final VoidCallback? onTap;
 
+  /// 共享的颜色动画，保证首页所有按钮的动画值一致。
+  final Animation<double>? breathingProgress;
+
+  /// 图标基准颜色，默认根据是否有文字判定黑/白。
+  final Color? iconColor;
+
+  /// 当前按钮是否处于呼吸动画状态。
+  final bool isBreathing;
+
+  /// 呼吸动画状态变更回调（模仿 FM 按钮的开/关）。
+  final ValueChanged<bool>? onBreathingChanged;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bool isIconOnly = (label == null) || label!.isEmpty;
-    final Color iconColor = isIconOnly ? Colors.black : Colors.white;
+    final Color resolvedIconColor =
+        iconColor ?? (isIconOnly ? Colors.black : Colors.white);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: _handleTap,
         borderRadius: BorderRadius.circular(24),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -28,11 +51,11 @@ class HomeSquareButton extends StatelessWidget {
             decoration: _innerDecoration(),
             child: Center(
               child: isIconOnly
-                  ? Icon(icon, color: iconColor, size: 24)
+                  ? _buildIcon(resolvedIconColor)
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(icon, color: iconColor, size: 22),
+                        _buildIcon(resolvedIconColor, size: 22),
                         const SizedBox(height: 6),
                         Text(
                           label!,
@@ -49,6 +72,26 @@ class HomeSquareButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildIcon(Color iconColor, {double size = 24}) {
+    if (icon == null) return const SizedBox.shrink();
+    final shouldAnimate = isBreathing && breathingProgress != null;
+    if (!shouldAnimate) {
+      return Icon(icon, color: Colors.white24, size: size);
+    }
+    return BreathingLightIcon(
+      icon: icon!,
+      color: iconColor,
+      size: size,
+      animate: true,
+      sharedProgress: breathingProgress,
+    );
+  }
+
+  void _handleTap() {
+    onBreathingChanged?.call(!isBreathing);
+    onTap?.call();
   }
 
   /// 外层暗色渐变，强调立体边框。

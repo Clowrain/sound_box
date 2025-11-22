@@ -7,6 +7,9 @@ class HomePrimaryActions extends StatelessWidget {
     super.key,
     required this.onSoundTap,
     this.onSettingsTap,
+    required this.breathingProgress,
+    required this.activeBreathingIds,
+    required this.onBreathingChanged,
   });
 
   /// “音效”按钮点击回调。
@@ -14,6 +17,12 @@ class HomePrimaryActions extends StatelessWidget {
 
   /// “设置”按钮回调，未指定时与音效入口保持一致。
   final VoidCallback? onSettingsTap;
+  final Animation<double>? breathingProgress;
+  final Set<String> activeBreathingIds;
+  final void Function(String id, bool active) onBreathingChanged;
+
+  static const String _soundButtonId = 'primary_sound';
+  static const String _settingsButtonId = 'primary_settings';
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +33,10 @@ class HomePrimaryActions extends StatelessWidget {
             label: '音效',
             icon: Icons.graphic_eq,
             onTap: onSoundTap,
+            breathingProgress: breathingProgress,
+            isBreathing: activeBreathingIds.contains(_soundButtonId),
+            onBreathingChanged: (active) =>
+                onBreathingChanged(_soundButtonId, active),
           ),
         ),
         const SizedBox(width: 12),
@@ -32,6 +45,10 @@ class HomePrimaryActions extends StatelessWidget {
             label: '设置',
             icon: Icons.settings_outlined,
             onTap: onSettingsTap ?? onSoundTap,
+            breathingProgress: breathingProgress,
+            isBreathing: activeBreathingIds.contains(_settingsButtonId),
+            onBreathingChanged: (active) =>
+                onBreathingChanged(_settingsButtonId, active),
           ),
         ),
       ],

@@ -6,6 +6,7 @@
 	"variants": [
 	  {
 		"name": "海浪_1",
+		"color": "#392893",
 		"path": "assets/sounds/audio/Background/Waves_fa-water/"
 	  },
 	  {
@@ -32,6 +33,7 @@
   },
   {
 	"name": "鸟鸣",
+	"color": "#038837",
 	"category": "background",
 	"icon": "twitter",
 	"variants": [

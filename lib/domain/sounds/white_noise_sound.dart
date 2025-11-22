@@ -7,6 +7,7 @@ class WhiteNoiseSound {
     required this.category,
     required this.iconName,
     required this.variants,
+    this.color,
     this.locked = false,
   });
 
@@ -15,6 +16,7 @@ class WhiteNoiseSound {
   final String category;
   final String iconName;
   final List<WhiteNoiseSoundVariant> variants;
+  final Color? color;
   final bool locked;
 
   IconData get icon => _WhiteNoiseIcons.iconFor(iconName);
@@ -27,6 +29,7 @@ class WhiteNoiseSound {
     String? category,
     String? iconName,
     List<WhiteNoiseSoundVariant>? variants,
+    Color? color,
     bool? locked,
   }) {
     return WhiteNoiseSound(
@@ -35,6 +38,7 @@ class WhiteNoiseSound {
       category: category ?? this.category,
       iconName: iconName ?? this.iconName,
       variants: variants ?? this.variants,
+      color: color ?? this.color,
       locked: locked ?? this.locked,
     );
   }
@@ -56,6 +60,7 @@ class WhiteNoiseSound {
       category: json['category'] as String? ?? 'other',
       iconName: json['icon'] as String? ?? 'graphic-eq',
       variants: variants,
+      color: _parseColor(json['color'] as String?),
     );
   }
 
@@ -85,17 +90,23 @@ class WhiteNoiseSoundState {
 }
 
 class WhiteNoiseSoundVariant {
-  const WhiteNoiseSoundVariant({required this.name, required this.path});
+  const WhiteNoiseSoundVariant({
+    required this.name,
+    required this.path,
+    this.color,
+  });
 
   factory WhiteNoiseSoundVariant.fromJson(Map<String, dynamic> json) {
     return WhiteNoiseSoundVariant(
       name: json['name'] as String? ?? '',
       path: json['path'] as String? ?? '',
+      color: _parseColor(json['color'] as String?),
     );
   }
 
   final String name;
   final String path;
+  final Color? color;
 }
 
 class _WhiteNoiseIcons {
@@ -147,4 +158,16 @@ class _WhiteNoiseIcons {
     'water': Icons.waves,
     'wind': Icons.air,
   };
+}
+
+Color? _parseColor(String? hex) {
+  if (hex == null || hex.isEmpty) return null;
+  final cleaned = hex.replaceFirst('#', '');
+  if (cleaned.length != 6 && cleaned.length != 8) return null;
+  final value = int.tryParse(
+    cleaned.length == 6 ? 'FF$cleaned' : cleaned,
+    radix: 16,
+  );
+  if (value == null) return null;
+  return Color(value);
 }
