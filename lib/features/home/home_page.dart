@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sound_box/core/router/sound_routes.dart';
 import 'package:sound_box/features/home/widgets/breathing_light_icon.dart';
 import 'package:sound_box/features/home/widgets/home_layouts.dart';
+import 'package:sound_box/shared/audio/sound_track_pool.dart';
 import 'package:sound_box/shared/state/pinned_sounds_state.dart';
 import 'package:sound_box/shared/state/sound_selection_state.dart';
 import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage>
   late final AnimationController _breathingController;
   late final Animation<double> _breathingProgress;
   final Set<String> _activeBreathingIds = {};
+  final SoundTrackPool _trackPool = SoundTrackPool.instance;
 
   @override
   void initState() {
@@ -53,6 +55,11 @@ class _HomePageState extends State<HomePage>
 
   void _openSounds() {
     Navigator.of(context).pushNamed(SoundRoutes.sounds);
+  }
+
+  void _handleHomeSoundTap(String key, String path, double volume) {
+    if (path.isEmpty) return;
+    _trackPool.toggleTrack(key: key, path: path, volume: volume, loop: true);
   }
 
   void _toggleBreathing(String id, bool active) {
@@ -115,6 +122,7 @@ class _HomePageState extends State<HomePage>
                           breathingProgress: _breathingProgress,
                           activeBreathingIds: _activeBreathingIds,
                           onBreathingChanged: _toggleBreathing,
+                          onSoundTap: _handleHomeSoundTap,
                         )
                       : HomeLandscapeLayout(
                           nowListenable: _nowNotifier,
@@ -124,6 +132,7 @@ class _HomePageState extends State<HomePage>
                           breathingProgress: _breathingProgress,
                           activeBreathingIds: _activeBreathingIds,
                           onBreathingChanged: _toggleBreathing,
+                          onSoundTap: _handleHomeSoundTap,
                         ),
                 );
               },

@@ -17,6 +17,7 @@ class HomePortraitLayout extends StatelessWidget {
     required this.breathingProgress,
     required this.activeBreathingIds,
     required this.onBreathingChanged,
+    required this.onSoundTap,
   });
 
   final ValueListenable<DateTime> nowListenable;
@@ -26,6 +27,7 @@ class HomePortraitLayout extends StatelessWidget {
   final Animation<double>? breathingProgress;
   final Set<String> activeBreathingIds;
   final void Function(String id, bool active) onBreathingChanged;
+  final void Function(String key, String path, double volume) onSoundTap;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class HomePortraitLayout extends StatelessWidget {
                   breathingProgress: breathingProgress,
                   activeBreathingIds: activeBreathingIds,
                   onBreathingChanged: onBreathingChanged,
+                  onSoundTap: onSoundTap,
                 ),
               ),
             ],
@@ -75,6 +78,7 @@ class HomeLandscapeLayout extends StatelessWidget {
     required this.breathingProgress,
     required this.activeBreathingIds,
     required this.onBreathingChanged,
+    required this.onSoundTap,
   });
 
   final ValueListenable<DateTime> nowListenable;
@@ -84,6 +88,7 @@ class HomeLandscapeLayout extends StatelessWidget {
   final Animation<double>? breathingProgress;
   final Set<String> activeBreathingIds;
   final void Function(String id, bool active) onBreathingChanged;
+  final void Function(String key, String path, double volume) onSoundTap;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +154,7 @@ class HomeLandscapeLayout extends StatelessWidget {
                   breathingProgress: breathingProgress,
                   activeBreathingIds: activeBreathingIds,
                   onBreathingChanged: onBreathingChanged,
+                  onSoundTap: onSoundTap,
                 ),
               ),
             ],

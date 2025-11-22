@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
+import 'package:sound_box/shared/audio/sound_track_pool.dart';
 import 'package:sound_box/shared/state/pinned_sounds_state.dart';
 import 'package:sound_box/shared/state/sound_selection_state.dart';
 import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
@@ -17,6 +18,7 @@ class SoundsPage extends StatefulWidget {
 class _SoundsPageState extends State<SoundsPage> {
   final Map<String, WhiteNoiseSoundState> _soundStates = {};
   String? _activeCategory;
+  final SoundTrackPool _pool = SoundTrackPool.instance;
 
   String _variantKey(WhiteNoiseSound sound, int variantIndex) =>
       '${sound.id}::$variantIndex';
@@ -26,16 +28,31 @@ class _SoundsPageState extends State<SoundsPage> {
     int variantIndex,
   ) {
     final key = _variantKey(sound, variantIndex);
-    return _soundStates[key] ??
-        const WhiteNoiseSoundState(volume: 0.6, isPlaying: false);
+    final preferredVolume = _pool.preferredVolume(key);
+    final isPlaying = _pool.isPlaying(key);
+    final existing = _soundStates[key];
+    if (existing != null) {
+      return existing.copyWith(isPlaying: isPlaying);
+    }
+    return WhiteNoiseSoundState(volume: preferredVolume, isPlaying: isPlaying);
   }
 
   void _toggleVariant(WhiteNoiseSound sound, int variantIndex) {
     if (sound.locked) return;
     final key = _variantKey(sound, variantIndex);
     final current = _stateForVariant(sound, variantIndex);
+    final nextPlaying = !current.isPlaying;
+    final path = _variantPath(sound, variantIndex);
+    if (path.isNotEmpty) {
+      _pool.toggleTrack(
+        key: key,
+        path: path,
+        volume: current.volume,
+        loop: true,
+      );
+    }
     setState(() {
-      _soundStates[key] = current.copyWith(isPlaying: !current.isPlaying);
+      _soundStates[key] = current.copyWith(isPlaying: nextPlaying);
     });
   }
 
@@ -47,8 +64,11 @@ class _SoundsPageState extends State<SoundsPage> {
     if (sound.locked) return;
     final key = _variantKey(sound, variantIndex);
     final current = _stateForVariant(sound, variantIndex);
+    final double clamped = value.clamp(0, 1).toDouble();
+    _pool.setVolume(key, clamped);
+    _pool.setPreferredVolume(key, clamped);
     setState(() {
-      _soundStates[key] = current.copyWith(volume: value.clamp(0, 1));
+      _soundStates[key] = current.copyWith(volume: clamped);
     });
   }
 
@@ -89,6 +109,23 @@ class _SoundsPageState extends State<SoundsPage> {
 
   void _handlePinnedVariantTap(PinnedVariantEntry entry) {
     _toggleVariantPin(entry.sound, entry.variantIndex);
+  }
+
+  String _variantPath(WhiteNoiseSound sound, int variantIndex) {
+    final variants = variantEntriesForSound(sound);
+    if (variantIndex < 0 || variantIndex >= variants.length) return '';
+    final entry = variants[variantIndex];
+    final basePath = entry.variant.path;
+    final label = entry.variant.name.isNotEmpty
+        ? entry.variant.name
+        : entry.sound.name;
+    return _effectiveAssetPath(basePath, label);
+  }
+
+  String _effectiveAssetPath(String basePath, String label) {
+    if (basePath.isEmpty) return '';
+    final fileName = label.endsWith('.m4a') ? label : '$label.m4a';
+    return '$basePath/$fileName';
   }
 
   @override

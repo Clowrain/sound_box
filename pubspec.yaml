@@ -33,6 +33,7 @@ dependencies:
 
   provider: ^6.1.2
   shared_preferences: ^2.2.2
+  audioplayers: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,65 @@ flutter:
 
   assets:
     - assets/sounds/
+    - assets/sounds/Background/Waves_fa-water/
+    - assets/sounds/Background/Birdsong_fa-dove/
+    - assets/sounds/Background/Bonfire_fa-fire/
+    - assets/sounds/Background/Rain_fa-cloud-showers-heavy/
+    - assets/sounds/Background/Stream_fa-bars-staggered/
+    - assets/sounds/Background/Country_life_fa-house/
+    - assets/sounds/Background/Wind_fa-wind/
+    - assets/sounds/Background/Forest_fa-tree/
+    - assets/sounds/Background/Road_fa-road/
+    - assets/sounds/Background/Frog_fa-frog/
+    - assets/sounds/Background/Night_fa-moon/
+    - assets/sounds/Background/Thunder_fa-bolt/
+    - assets/sounds/Background/Waterfall_fa-mountains/
+    - assets/sounds/Locations/Basketball_court_fa-basketball/
+    - assets/sounds/Locations/Bells_fa-bell/
+    - assets/sounds/Locations/Cafe_fa-mug-saucer/
+    - assets/sounds/Locations/Chants_fa-church/
+    - assets/sounds/Locations/Chicken_coop_fa-feather/
+    - assets/sounds/Locations/Conversations_fa-comments/
+    - assets/sounds/Locations/Farm_fa-tractor/
+    - assets/sounds/Locations/Plane_fa-plane/
+    - assets/sounds/Locations/Playground_fa-puzzle-piece/
+    - assets/sounds/Locations/Street,_city_fa-city/
+    - assets/sounds/Locations/Supermarket_fa-bag-shopping/
+    - assets/sounds/Locations/Train_fa-train/
+    - assets/sounds/Locations/Underground_fa-train-subway/
+    - assets/sounds/ASMR/Barbershop_fa-scissors/
+    - assets/sounds/ASMR/Tapping_fa-hands-clapping/
+    - assets/sounds/ASMR/Triggers/
+    - assets/sounds/ASMR/Whisper/
+    - assets/sounds/Tweak/Bubbles_fa-cauldron/
+    - assets/sounds/Tweak/Cat_purr_fa-cat/
+    - assets/sounds/Tweak/Ceiling_fan_fa-fan/
+    - assets/sounds/Tweak/Clocks_fa-clock/
+    - assets/sounds/Tweak/Deep_sea_fa-octopus-deploy/
+    - assets/sounds/Tweak/Fireworks/
+    - assets/sounds/Tweak/Hair_dryer_fa-user-hair/
+    - assets/sounds/Tweak/Keyboard_fa-keyboard/
+    - assets/sounds/Tweak/Potato_chips_fa-cookie-bite/
+    - assets/sounds/Tweak/Printer_fa-print/
+    - assets/sounds/Tweak/Space_fa-user-astronaut/
+    - assets/sounds/Tweak/Table_fan_fa-fan-table/
+    - assets/sounds/Tweak/Vacuum_cleaner_fa-vacuum/
+    - assets/sounds/Tweak/Wind_chimes_fa-music/
+    - assets/sounds/Color_noise/Brown_noise_fa-volume/
+    - assets/sounds/Color_noise/Pink_noise_fa-waveform/
+    - assets/sounds/Color_noise/White_noise_fa-tv/
+    - assets/sounds/Others/Engine_fa-engine/
+    - assets/sounds/Others/Boat_fa-sailboat/
+    - assets/sounds/Others/Swim_fa-person-swimming/
+    - assets/sounds/Others/Whale_fa-whale/
+    - assets/sounds/Others/Breath_fa-face-nose-steam/
+    - assets/sounds/Others/Magma_fa-volcano/
+    - assets/sounds/Others/Walk_fa-person-walking/
+    - assets/sounds/Lofi/Chill/
+    - assets/sounds/Lofi/Study/
+    - assets/sounds/Lofi/Sleep/
+    - assets/sounds/Lofi/Jazz/
+    - assets/sounds/Lofi/Piano/
 
   fonts:
     - family: NotoSansSC
