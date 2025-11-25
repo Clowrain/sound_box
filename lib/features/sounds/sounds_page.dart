@@ -116,16 +116,7 @@ class _SoundsPageState extends State<SoundsPage> {
     if (variantIndex < 0 || variantIndex >= variants.length) return '';
     final entry = variants[variantIndex];
     final basePath = entry.variant.path;
-    final label = entry.variant.name.isNotEmpty
-        ? entry.variant.name
-        : entry.sound.name;
-    return _effectiveAssetPath(basePath, label);
-  }
-
-  String _effectiveAssetPath(String basePath, String label) {
-    if (basePath.isEmpty) return '';
-    final fileName = label.endsWith('.m4a') ? label : '$label.m4a';
-    return '$basePath/$fileName';
+    return basePath;
   }
 
   @override

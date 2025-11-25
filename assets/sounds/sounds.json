@@ -1,1397 +1,243 @@
 [
-  {
-	"name": "海浪",
-	"category": "background",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "海浪_1",
-		"color": "#392893",
-		"path": "sounds/Background/Waves_fa-water"
-	  },
-	  {
-		"name": "海浪_2",
-		"path": "sounds/Background/Waves_fa-water"
-	  },
-	  {
-		"name": "海浪_3",
-		"path": "sounds/Background/Waves_fa-water"
-	  },
-	  {
-		"name": "海岸洞穴",
-		"path": "sounds/Background/Waves_fa-water"
-	  },
-	  {
-		"name": "岩石海岸",
-		"path": "sounds/Background/Waves_fa-water"
-	  },
-	  {
-		"name": "风暴",
-		"path": "sounds/Background/Waves_fa-water"
-	  }
-	]
-  },
-  {
-	"name": "鸟鸣",
-	"color": "#038837",
-	"category": "background",
-	"icon": "twitter",
-	"variants": [
-	  {
-		"name": "鸟鸣_1",
-		"path": "sounds/Background/Birdsong_fa-dove"
-	  },
-	  {
-		"name": "鸟鸣_2",
-		"path": "sounds/Background/Birdsong_fa-dove"
-	  },
-	  {
-		"name": "鸟鸣_3",
-		"path": "sounds/Background/Birdsong_fa-dove"
-	  },
-	  {
-		"name": "鸟鸣_4",
-		"path": "sounds/Background/Birdsong_fa-dove"
-	  }
-	]
-  },
-  {
-	"name": "篝火",
-	"category": "background",
-	"icon": "fire",
-	"variants": [
-	  {
-		"name": "篝火_1",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "篝火_2",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "篝火_3",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "篝火_4",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "篝火_5",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "壁炉",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  },
-	  {
-		"name": "余烬",
-		"path": "sounds/Background/Bonfire_fa-fire"
-	  }
-	]
-  },
-  {
-	"name": "雨声",
-	"category": "background",
-	"icon": "cloud-rain-fill",
-	"variants": [
-	  {
-		"name": "雨声_1",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "雨声_2",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "雨声_3",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "帐篷雨声",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "窗上雨声",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "伞上雨声",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  },
-	  {
-		"name": "雷雨",
-		"path": "sounds/Background/Rain_fa-cloud-showers-heavy"
-	  }
-	]
-  },
-  {
-	"name": "溪流",
-	"category": "background",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "溪流",
-		"path": "sounds/Background/Stream_fa-bars-staggered"
-	  },
-	  {
-		"name": "溪流_2",
-		"path": "sounds/Background/Stream_fa-bars-staggered"
-	  },
-	  {
-		"name": "溪流_3",
-		"path": "sounds/Background/Stream_fa-bars-staggered"
-	  },
-	  {
-		"name": "洞穴溪流",
-		"path": "sounds/Background/Stream_fa-bars-staggered"
-	  },
-	  {
-		"name": "山涧",
-		"path": "sounds/Background/Stream_fa-bars-staggered"
-	  }
-	]
-  },
-  {
-	"name": "乡村生活",
-	"category": "background",
-	"icon": "house-fill",
-	"variants": [
-	  {
-		"name": "生活_1",
-		"path": "sounds/Background/Country_life_fa-house"
-	  },
-	  {
-		"name": "生活_2",
-		"path": "sounds/Background/Country_life_fa-house"
-	  },
-	  {
-		"name": "生活_3",
-		"path": "sounds/Background/Country_life_fa-house"
-	  }
-	]
-  },
-  {
-	"name": "风声",
-	"category": "background",
-	"icon": "wind",
-	"variants": [
-	  {
-		"name": "微风",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "中风",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "中风_2",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "强风",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "呼啸",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "啸叫",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "阴森",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "沙漠",
-		"path": "sounds/Background/Wind_fa-wind"
-	  },
-	  {
-		"name": "远方",
-		"path": "sounds/Background/Wind_fa-wind"
-	  }
-	]
-  },
-  {
-	"name": "森林",
-	"category": "background",
-	"icon": "tree-fill",
-	"variants": [
-	  {
-		"name": "森林_1",
-		"path": "sounds/Background/Forest_fa-tree"
-	  },
-	  {
-		"name": "森林_2",
-		"path": "sounds/Background/Forest_fa-tree"
-	  },
-	  {
-		"name": "森林_3",
-		"path": "sounds/Background/Forest_fa-tree"
-	  },
-	  {
-		"name": "森林_4",
-		"path": "sounds/Background/Forest_fa-tree"
-	  },
-	  {
-		"name": "森林_5",
-		"path": "sounds/Background/Forest_fa-tree"
-	  }
-	]
-  },
-  {
-	"name": "道路",
-	"category": "background",
-	"icon": "signpost-2-fill",
-	"variants": [
-	  {
-		"name": "道路_1",
-		"path": "sounds/Background/Road_fa-road"
-	  },
-	  {
-		"name": "道路_2",
-		"path": "sounds/Background/Road_fa-road"
-	  },
-	  {
-		"name": "雪路",
-		"path": "sounds/Background/Road_fa-road"
-	  },
-	  {
-		"name": "火车",
-		"path": "sounds/Background/Road_fa-road"
-	  }
-	]
-  },
-  {
-	"name": "青蛙",
-	"category": "background",
-	"icon": "bug-fill",
-	"variants": [
-	  {
-		"name": "青蛙和蝉_1",
-		"path": "sounds/Background/Frog_fa-frog"
-	  },
-	  {
-		"name": "青蛙和蝉_2",
-		"path": "sounds/Background/Frog_fa-frog"
-	  }
-	]
-  },
-  {
-	"name": "夜晚",
-	"category": "background",
-	"icon": "moon-stars-fill",
-	"variants": [
-	  {
-		"name": "夜晚_1",
-		"path": "sounds/Background/Night_fa-moon"
-	  },
-	  {
-		"name": "夜晚_2",
-		"path": "sounds/Background/Night_fa-moon"
-	  },
-	  {
-		"name": "城市夜晚_1",
-		"path": "sounds/Background/Night_fa-moon"
-	  },
-	  {
-		"name": "城市夜晚_2",
-		"path": "sounds/Background/Night_fa-moon"
-	  }
-	]
-  },
-  {
-	"name": "雷声",
-	"category": "background",
-	"icon": "cloud-lightning-fill",
-	"variants": [
-	  {
-		"name": "雷声_1",
-		"path": "sounds/Background/Thunder_fa-bolt"
-	  },
-	  {
-		"name": "雷声_2",
-		"path": "sounds/Background/Thunder_fa-bolt"
-	  },
-	  {
-		"name": "雷雨",
-		"path": "sounds/Background/Thunder_fa-bolt"
-	  }
-	]
-  },
-  {
-	"name": "瀑布",
-	"category": "background",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "瀑布_1",
-		"path": "sounds/Background/Waterfall_fa-mountains"
-	  },
-	  {
-		"name": "瀑布_2",
-		"path": "sounds/Background/Waterfall_fa-mountains"
-	  },
-	  {
-		"name": "地下瀑布",
-		"path": "sounds/Background/Waterfall_fa-mountains"
-	  }
-	]
-  },
-  {
-	"name": "篮球场",
-	"category": "place",
-	"icon": "dribbble",
-	"variants": [
-	  {
-		"name": "篮球比赛_1",
-		"path": "sounds/Locations/Basketball_court_fa-basketball"
-	  },
-	  {
-		"name": "篮球比赛_2",
-		"path": "sounds/Locations/Basketball_court_fa-basketball"
-	  },
-	  {
-		"name": "篮球训练",
-		"path": "sounds/Locations/Basketball_court_fa-basketball"
-	  }
-	]
-  },
-  {
-	"name": "钟声",
-	"category": "place",
-	"icon": "bell-fill",
-	"variants": [
-	  {
-		"name": "钟声_1",
-		"path": "sounds/Locations/Bells_fa-bell"
-	  },
-	  {
-		"name": "钟声_2",
-		"path": "sounds/Locations/Bells_fa-bell"
-	  },
-	  {
-		"name": "钟声_3",
-		"path": "sounds/Locations/Bells_fa-bell"
-	  },
-	  {
-		"name": "钟声_4",
-		"path": "sounds/Locations/Bells_fa-bell"
-	  }
-	]
-  },
-  {
-	"name": "咖啡厅",
-	"category": "place",
-	"icon": "cup-hot-fill",
-	"variants": [
-	  {
-		"name": "咖啡厅",
-		"path": "sounds/Locations/Cafe_fa-mug-saucer"
-	  },
-	  {
-		"name": "咖啡厅_1",
-		"path": "sounds/Locations/Cafe_fa-mug-saucer"
-	  },
-	  {
-		"name": "咖啡厅_2",
-		"path": "sounds/Locations/Cafe_fa-mug-saucer"
-	  },
-	  {
-		"name": "咖啡机",
-		"path": "sounds/Locations/Cafe_fa-mug-saucer"
-	  }
-	]
-  },
-  {
-	"name": "圣歌",
-	"category": "place",
-	"icon": "building-fill",
-	"variants": [
-	  {
-		"name": "圣歌_1",
-		"path": "sounds/Locations/Chants_fa-church"
-	  },
-	  {
-		"name": "圣歌_2",
-		"path": "sounds/Locations/Chants_fa-church"
-	  },
-	  {
-		"name": "圣歌_3",
-		"path": "sounds/Locations/Chants_fa-church"
-	  }
-	]
-  },
-  {
-	"name": "鸡舍",
-	"category": "place",
-	"icon": "egg-fill",
-	"variants": [
-	  {
-		"name": "鸡舍_1",
-		"path": "sounds/Locations/Chicken_coop_fa-feather"
-	  },
-	  {
-		"name": "鸡舍_2",
-		"path": "sounds/Locations/Chicken_coop_fa-feather"
-	  },
-	  {
-		"name": "鸡群",
-		"path": "sounds/Locations/Chicken_coop_fa-feather"
-	  }
-	]
-  },
-  {
-	"name": "对话",
-	"category": "place",
-	"icon": "chat-dots-fill",
-	"variants": [
-	  {
-		"name": "英语对话",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  },
-	  {
-		"name": "法语对话",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  },
-	  {
-		"name": "男士对话",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  },
-	  {
-		"name": "男士对话_2",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  },
-	  {
-		"name": "邻居对话",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  },
-	  {
-		"name": "夜谈",
-		"path": "sounds/Locations/Conversations_fa-comments"
-	  }
-	]
-  },
-  {
-	"name": "农场",
-	"category": "place",
-	"icon": "flower1",
-	"variants": [
-	  {
-		"name": "农场_1",
-		"path": "sounds/Locations/Farm_fa-tractor"
-	  },
-	  {
-		"name": "农场_2",
-		"path": "sounds/Locations/Farm_fa-tractor"
-	  },
-	  {
-		"name": "农场_3",
-		"path": "sounds/Locations/Farm_fa-tractor"
-	  },
-	  {
-		"name": "农场_4",
-		"path": "sounds/Locations/Farm_fa-tractor"
-	  }
-	]
-  },
-  {
-	"name": "机舱",
-	"category": "place",
-	"icon": "airplane-engines",
-	"variants": [
-	  {
-		"name": "机舱_1",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  },
-	  {
-		"name": "机舱_2",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  },
-	  {
-		"name": "机舱_3",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  },
-	  {
-		"name": "飞机内_1",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  },
-	  {
-		"name": "飞机内_2",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  },
-	  {
-		"name": "飞机",
-		"path": "sounds/Locations/Plane_fa-plane"
-	  }
-	]
-  },
-  {
-	"name": "游乐场",
-	"category": "place",
-	"icon": "puzzle-fill",
-	"variants": [
-	  {
-		"name": "游乐场_1",
-		"path": "sounds/Locations/Playground_fa-puzzle-piece"
-	  },
-	  {
-		"name": "游乐场_2",
-		"path": "sounds/Locations/Playground_fa-puzzle-piece"
-	  },
-	  {
-		"name": "游乐场_3",
-		"path": "sounds/Locations/Playground_fa-puzzle-piece"
-	  },
-	  {
-		"name": "游乐场_4",
-		"path": "sounds/Locations/Playground_fa-puzzle-piece"
-	  }
-	]
-  },
-  {
-	"name": "城市街道",
-	"category": "place",
-	"icon": "buildings-fill",
-	"variants": [
-	  {
-		"name": "街道_1",
-		"path": "sounds/Locations/Street,_city_fa-city"
-	  },
-	  {
-		"name": "街道_2",
-		"path": "sounds/Locations/Street,_city_fa-city"
-	  },
-	  {
-		"name": "交通",
-		"path": "sounds/Locations/Street,_city_fa-city"
-	  }
-	]
-  },
-  {
-	"name": "超市",
-	"category": "place",
-	"icon": "cart-fill",
-	"variants": [
-	  {
-		"name": "收银机_1",
-		"path": "sounds/Locations/Supermarket_fa-bag-shopping"
-	  },
-	  {
-		"name": "老收银机",
-		"path": "sounds/Locations/Supermarket_fa-bag-shopping"
-	  },
-	  {
-		"name": "超市_1",
-		"path": "sounds/Locations/Supermarket_fa-bag-shopping"
-	  },
-	  {
-		"name": "超市_2",
-		"path": "sounds/Locations/Supermarket_fa-bag-shopping"
-	  }
-	]
-  },
-  {
-	"name": "火车",
-	"category": "place",
-	"icon": "train-front-fill",
-	"variants": [
-	  {
-		"name": "车厢内_1",
-		"path": "sounds/Locations/Train_fa-train"
-	  },
-	  {
-		"name": "车厢内_2",
-		"path": "sounds/Locations/Train_fa-train"
-	  },
-	  {
-		"name": "火车站",
-		"path": "sounds/Locations/Train_fa-train"
-	  },
-	  {
-		"name": "火车",
-		"path": "sounds/Locations/Train_fa-train"
-	  }
-	]
-  },
-  {
-	"name": "地铁",
-	"category": "place",
-	"icon": "train-lightrail-front",
-	"variants": [
-	  {
-		"name": "自动扶梯",
-		"path": "sounds/Locations/Underground_fa-train-subway"
-	  },
-	  {
-		"name": "地铁_1",
-		"path": "sounds/Locations/Underground_fa-train-subway"
-	  },
-	  {
-		"name": "地铁_2",
-		"path": "sounds/Locations/Underground_fa-train-subway"
-	  }
-	]
-  },
-  {
-	"name": "理发店",
-	"category": "asmr",
-	"icon": "scissors",
-	"variants": [
-	  {
-		"name": "面部清洁",
-		"path": "sounds/ASMR/Barbershop_fa-scissors"
-	  },
-	  {
-		"name": "理发_1",
-		"path": "sounds/ASMR/Barbershop_fa-scissors"
-	  },
-	  {
-		"name": "理发_2",
-		"path": "sounds/ASMR/Barbershop_fa-scissors"
-	  },
-	  {
-		"name": "喷雾",
-		"path": "sounds/ASMR/Barbershop_fa-scissors"
-	  }
-	]
-  },
-  {
-	"name": "敲击",
-	"category": "asmr",
-	"icon": "hand-index-thumb",
-	"variants": [
-	  {
-		"name": "纸箱",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  },
-	  {
-		"name": "皮革封面",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  },
-	  {
-		"name": "皮革枕头",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  },
-	  {
-		"name": "塑料",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  },
-	  {
-		"name": "木头_1",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  },
-	  {
-		"name": "木头_2",
-		"path": "sounds/ASMR/Tapping_fa-hands-clapping"
-	  }
-	]
-  },
-  {
-	"name": "触发器",
-	"category": "asmr",
-	"icon": "stars",
-	"variants": [
-	  {
-		"name": "耳朵按摩",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "起泡",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "泡沫",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "塑料袋",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "海绵",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "敲击",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "魔术贴",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "木头_1",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "木头_2",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "木头_3",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "木头_4",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "羊毛",
-		"path": "sounds/ASMR/Triggers"
-	  },
-	  {
-		"name": "铅笔书写",
-		"path": "sounds/ASMR/Triggers"
-	  }
-	]
-  },
-  {
-	"name": "耳语",
-	"category": "asmr",
-	"icon": "chat-square-quote-fill",
-	"variants": [
-	  {
-		"name": "特殊音_1",
-		"path": "sounds/ASMR/Whisper"
-	  },
-	  {
-		"name": "特殊音_2",
-		"path": "sounds/ASMR/Whisper"
-	  },
-	  {
-		"name": "耳语_2",
-		"path": "sounds/ASMR/Whisper"
-	  },
-	  {
-		"name": "耳语_1",
-		"path": "sounds/ASMR/Whisper"
-	  }
-	]
-  },
-  {
-	"name": "泡泡",
-	"category": "ambient",
-	"icon": "droplet-fill",
-	"variants": [
-	  {
-		"name": "气泡_1",
-		"path": "sounds/Tweak/Bubbles_fa-cauldron"
-	  },
-	  {
-		"name": "气泡_2",
-		"path": "sounds/Tweak/Bubbles_fa-cauldron"
-	  },
-	  {
-		"name": "气泡_3",
-		"path": "sounds/Tweak/Bubbles_fa-cauldron"
-	  },
-	  {
-		"name": "气泡_4",
-		"path": "sounds/Tweak/Bubbles_fa-cauldron"
-	  }
-	]
-  },
-  {
-	"name": "猫",
-	"category": "ambient",
-	"icon": "emoji-smile-fill",
-	"variants": [
-	  {
-		"name": "猫打呼_1",
-		"path": "sounds/Tweak/Cat_purr_fa-cat"
-	  },
-	  {
-		"name": "猫打呼_2",
-		"path": "sounds/Tweak/Cat_purr_fa-cat"
-	  }
-	]
-  },
-  {
-	"name": "吊扇",
-	"category": "ambient",
-	"icon": "fan",
-	"variants": [
-	  {
-		"name": "吊扇_1",
-		"path": "sounds/Tweak/Ceiling_fan_fa-fan"
-	  },
-	  {
-		"name": "吊扇_2",
-		"path": "sounds/Tweak/Ceiling_fan_fa-fan"
-	  }
-	]
-  },
-  {
-	"name": "时钟",
-	"category": "ambient",
-	"icon": "clock-fill",
-	"variants": [
-	  {
-		"name": "挂钟_1",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "挂钟_2",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "挂钟_3",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "挂钟_4",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "钟楼",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "计时器",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "钟声",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "手表_1",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  },
-	  {
-		"name": "手表_2",
-		"path": "sounds/Tweak/Clocks_fa-clock"
-	  }
-	]
-  },
-  {
-	"name": "深海",
-	"category": "ambient",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "深海_1",
-		"path": "sounds/Tweak/Deep_sea_fa-octopus-deploy"
-	  },
-	  {
-		"name": "深海_2",
-		"path": "sounds/Tweak/Deep_sea_fa-octopus-deploy"
-	  },
-	  {
-		"name": "深海_3",
-		"path": "sounds/Tweak/Deep_sea_fa-octopus-deploy"
-	  },
-	  {
-		"name": "深海_4",
-		"path": "sounds/Tweak/Deep_sea_fa-octopus-deploy"
-	  }
-	]
-  },
-  {
-	"name": "烟花",
-	"category": "ambient",
-	"icon": "stars",
-	"variants": [
-	  {
-		"name": "烟花_1",
-		"path": "sounds/Tweak/Fireworks"
-	  },
-	  {
-		"name": "烟花_2",
-		"path": "sounds/Tweak/Fireworks"
-	  }
-	]
-  },
-  {
-	"name": "电吹风",
-	"category": "ambient",
-	"icon": "wind",
-	"variants": [
-	  {
-		"name": "电吹风_1",
-		"path": "sounds/Tweak/Hair_dryer_fa-user-hair"
-	  },
-	  {
-		"name": "电吹风_2",
-		"path": "sounds/Tweak/Hair_dryer_fa-user-hair"
-	  },
-	  {
-		"name": "电吹风_3",
-		"path": "sounds/Tweak/Hair_dryer_fa-user-hair"
-	  }
-	]
-  },
-  {
-	"name": "键盘",
-	"category": "ambient",
-	"icon": "keyboard-fill",
-	"variants": [
-	  {
-		"name": "键盘_1",
-		"path": "sounds/Tweak/Keyboard_fa-keyboard"
-	  },
-	  {
-		"name": "键盘_2",
-		"path": "sounds/Tweak/Keyboard_fa-keyboard"
-	  },
-	  {
-		"name": "打字机",
-		"path": "sounds/Tweak/Keyboard_fa-keyboard"
-	  }
-	]
-  },
-  {
-	"name": "薯片",
-	"category": "ambient",
-	"icon": "cookie",
-	"variants": [
-	  {
-		"name": "咀嚼_1",
-		"path": "sounds/Tweak/Potato_chips_fa-cookie-bite"
-	  },
-	  {
-		"name": "咀嚼_2",
-		"path": "sounds/Tweak/Potato_chips_fa-cookie-bite"
-	  },
-	  {
-		"name": "咀嚼_3",
-		"path": "sounds/Tweak/Potato_chips_fa-cookie-bite"
-	  }
-	]
-  },
-  {
-	"name": "打印机",
-	"category": "ambient",
-	"icon": "printer-fill",
-	"variants": [
-	  {
-		"name": "打印机_1",
-		"path": "sounds/Tweak/Printer_fa-print"
-	  },
-	  {
-		"name": "打印机_2",
-		"path": "sounds/Tweak/Printer_fa-print"
-	  },
-	  {
-		"name": "打印机_3",
-		"path": "sounds/Tweak/Printer_fa-print"
-	  },
-	  {
-		"name": "打印机_4",
-		"path": "sounds/Tweak/Printer_fa-print"
-	  }
-	]
-  },
-  {
-	"name": "太空",
-	"category": "ambient",
-	"icon": "stars",
-	"variants": [
-	  {
-		"name": "太空_1",
-		"path": "sounds/Tweak/Space_fa-user-astronaut"
-	  },
-	  {
-		"name": "太空_2",
-		"path": "sounds/Tweak/Space_fa-user-astronaut"
-	  },
-	  {
-		"name": "太空_3",
-		"path": "sounds/Tweak/Space_fa-user-astronaut"
-	  },
-	  {
-		"name": "太空_4",
-		"path": "sounds/Tweak/Space_fa-user-astronaut"
-	  },
-	  {
-		"name": "太空_5",
-		"path": "sounds/Tweak/Space_fa-user-astronaut"
-	  }
-	]
-  },
-  {
-	"name": "台式风扇",
-	"category": "ambient",
-	"icon": "fan",
-	"variants": [
-	  {
-		"name": "台扇_1",
-		"path": "sounds/Tweak/Table_fan_fa-fan-table"
-	  },
-	  {
-		"name": "台扇_2",
-		"path": "sounds/Tweak/Table_fan_fa-fan-table"
-	  }
-	]
-  },
-  {
-	"name": "吸尘器",
-	"category": "ambient",
-	"icon": "tools",
-	"variants": [
-	  {
-		"name": "吸尘器_1",
-		"path": "sounds/Tweak/Vacuum_cleaner_fa-vacuum"
-	  },
-	  {
-		"name": "吸尘器_2",
-		"path": "sounds/Tweak/Vacuum_cleaner_fa-vacuum"
-	  }
-	]
-  },
-  {
-	"name": "风铃",
-	"category": "ambient",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "风铃_1",
-		"path": "sounds/Tweak/Wind_chimes_fa-music"
-	  },
-	  {
-		"name": "风铃_2",
-		"path": "sounds/Tweak/Wind_chimes_fa-music"
-	  },
-	  {
-		"name": "风铃_3",
-		"path": "sounds/Tweak/Wind_chimes_fa-music"
-	  },
-	  {
-		"name": "风铃_4",
-		"path": "sounds/Tweak/Wind_chimes_fa-music"
-	  }
-	]
-  },
-  {
-	"name": "棕色噪音",
-	"category": "noise",
-	"icon": "broadcast-pin",
-	"variants": [
-	  {
-		"name": "棕色噪音",
-		"path": "sounds/Color_noise/Brown_noise_fa-volume"
-	  }
-	]
-  },
-  {
-	"name": "粉红噪音",
-	"category": "noise",
-	"icon": "broadcast-pin",
-	"variants": [
-	  {
-		"name": "粉红噪音",
-		"path": "sounds/Color_noise/Pink_noise_fa-waveform"
-	  }
-	]
-  },
-  {
-	"name": "白噪音",
-	"category": "noise",
-	"icon": "broadcast-pin",
-	"variants": [
-	  {
-		"name": "白噪音",
-		"path": "sounds/Color_noise/White_noise_fa-tv"
-	  }
-	]
-  },
-  {
-	"name": "引擎",
-	"category": "other",
-	"icon": "gear-fill",
-	"variants": [
-	  {
-		"name": "引擎_1",
-		"path": "sounds/Others/Engine_fa-engine"
-	  },
-	  {
-		"name": "引擎_2",
-		"path": "sounds/Others/Engine_fa-engine"
-	  },
-	  {
-		"name": "引擎_3",
-		"path": "sounds/Others/Engine_fa-engine"
-	  },
-	  {
-		"name": "引擎_4",
-		"path": "sounds/Others/Engine_fa-engine"
-	  }
-	]
-  },
-  {
-	"name": "船",
-	"category": "other",
-	"icon": "life-preserver",
-	"variants": [
-	  {
-		"name": "摩托艇_1",
-		"path": "sounds/Others/Boat_fa-sailboat"
-	  },
-	  {
-		"name": "摩托艇_2",
-		"path": "sounds/Others/Boat_fa-sailboat"
-	  },
-	  {
-		"name": "划艇_1",
-		"path": "sounds/Others/Boat_fa-sailboat"
-	  },
-	  {
-		"name": "划艇_2",
-		"path": "sounds/Others/Boat_fa-sailboat"
-	  }
-	]
-  },
-  {
-	"name": "游泳",
-	"category": "other",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "游泳_1",
-		"path": "sounds/Others/Swim_fa-person-swimming"
-	  },
-	  {
-		"name": "游泳_2",
-		"path": "sounds/Others/Swim_fa-person-swimming"
-	  }
-	]
-  },
-  {
-	"name": "鲸鱼",
-	"category": "other",
-	"icon": "water",
-	"variants": [
-	  {
-		"name": "鲸鱼_1",
-		"path": "sounds/Others/Whale_fa-whale"
-	  },
-	  {
-		"name": "鲸鱼_2",
-		"path": "sounds/Others/Whale_fa-whale"
-	  },
-	  {
-		"name": "恐怖鲸声",
-		"path": "sounds/Others/Whale_fa-whale"
-	  }
-	]
-  },
-  {
-	"name": "呼吸",
-	"category": "other",
-	"icon": "wind",
-	"variants": [
-	  {
-		"name": "呼吸_1",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "呼吸_2",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "呼吸_3",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "吸气_1",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "吸气_2",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "鼾声",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  },
-	  {
-		"name": "白噪音",
-		"path": "sounds/Others/Breath_fa-face-nose-steam"
-	  }
-	]
-  },
-  {
-	"name": "岩浆",
-	"category": "other",
-	"icon": "triangle-fill",
-	"variants": [
-	  {
-		"name": "岩浆_1",
-		"path": "sounds/Others/Magma_fa-volcano"
-	  },
-	  {
-		"name": "岩浆_2",
-		"path": "sounds/Others/Magma_fa-volcano"
-	  },
-	  {
-		"name": "岩浆_3",
-		"path": "sounds/Others/Magma_fa-volcano"
-	  }
-	]
-  },
-  {
-	"name": "步行",
-	"category": "other",
-	"icon": "person-walking",
-	"variants": [
-	  {
-		"name": "泥路_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "泥路_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "泥路_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "泥路_4",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "草地_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "草地_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "草地_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "落叶_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "落叶_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "落叶_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "沙地_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "沙地_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "沙地_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_4",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_5",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "雪地_6",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "脚步_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "脚步_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "脚步_3",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "地毯",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "地板_1",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  },
-	  {
-		"name": "地板_2",
-		"path": "sounds/Others/Walk_fa-person-walking"
-	  }
-	]
-  },
-  {
-	"name": "轻松",
-	"category": "lofi",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "轻松",
-		"path": "sounds/Lofi/Chill"
-	  }
-	]
-  },
-  {
-	"name": "学习",
-	"category": "lofi",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "学习",
-		"path": "sounds/Lofi/Study"
-	  }
-	]
-  },
-  {
-	"name": "助眠",
-	"category": "lofi",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "助眠",
-		"path": "sounds/Lofi/Sleep"
-	  }
-	]
-  },
-  {
-	"name": "爵士",
-	"category": "lofi",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "爵士",
-		"path": "sounds/Lofi/Jazz"
-	  }
-	]
-  },
-  {
-	"name": "钢琴",
-	"category": "lofi",
-	"icon": "music-note-beamed",
-	"variants": [
-	  {
-		"name": "钢琴",
-		"path": "sounds/Lofi/Piano"
-	  }
-	]
-  }
+	{
+		"name": "声音",
+		"category": "nature",
+		"icon": "mdi:tree",
+		"variants": [
+			{
+				"name": "风铃",
+				"path": "sounds/variants/wind_chimes.aac",
+				"icon": "mdi:air",
+				"color": "#B0E0E6"
+			},
+			{
+				"name": "森林",
+				"path": "sounds/variants/forest.aac",
+				"icon": "mdi:tree",
+				"color": "#228B22"
+			},
+			{
+				"name": "海浪",
+				"path": "sounds/variants/sea_wave.aac",
+				"icon": "mdi:water",
+				"color": "#1E90FF"
+			},
+			{
+				"name": "雨声",
+				"path": "sounds/variants/rain.aac",
+				"icon": "mdi:cloud-rain",
+				"color": "#ADD8E6"
+			},
+			{
+				"name": "河流/溪流",
+				"path": "sounds/variants/rivers_streams.aac",
+				"icon": "mdi:water-drop",
+				"color": "#4682B4"
+			},
+			{
+				"name": "水滴",
+				"path": "sounds/variants/water_drops.aac",
+				"icon": "mdi:tint",
+				"color": "#00BFFF"
+			}
+		]
+	},
+	{
+		"name": "动物",
+		"category": "animals",
+		"icon": "fa:paw",
+		"variants": [
+			{
+				"name": "猫的呼噜",
+				"path": "sounds/variants/cat_purr.aac",
+				"icon": "fa:cat",
+				"color": "#FF6347"
+			},
+			{
+				"name": "蝉鸣",
+				"path": "sounds/variants/cicada.aac",
+				"icon": "fa:bug",
+				"color": "#FFD700"
+			},
+			{
+				"name": "海豚",
+				"path": "sounds/variants/dolphin.aac",
+				"icon": "fa:fish",
+				"color": "#20B2AA"
+			},
+			{
+				"name": "驴叫",
+				"path": "sounds/variants/donkey.aac",
+				"icon": "fa:donkey",
+				"color": "#8B4513"
+			},
+			{
+				"name": "鲸鱼",
+				"path": "sounds/variants/whale.aac",
+				"icon": "fa:whale",
+				"color": "#4682B4"
+			}
+		]
+	},
+	{
+		"name": "机械",
+		"category": "machines",
+		"icon": "feather:cogs",
+		"variants": [
+			{
+				"name": "钢琴键盘",
+				"path": "sounds/variants/keyboard.aac",
+				"icon": "feather:keyboard",
+				"color": "#A9A9A9"
+			},
+			{
+				"name": "打印机",
+				"path": "sounds/variants/printer.aac",
+				"icon": "feather:printer",
+				"color": "#808080"
+			},
+			{
+				"name": "打字机",
+				"path": "sounds/variants/typewriter.aac",
+				"icon": "feather:keyboard",
+				"color": "#D3D3D3"
+			},
+			{
+				"name": "风扇",
+				"path": "sounds/variants/fan.aac",
+				"icon": "feather:wind",
+				"color": "#F0E68C"
+			},
+			{
+				"name": "暖炉",
+				"path": "sounds/variants/furnace.aac",
+				"icon": "feather:fire",
+				"color": "#FF4500"
+			}
+		]
+	},
+	{
+		"name": "交通工具",
+		"category": "vehicles",
+		"icon": "mdi:car",
+		"variants": [
+			{
+				"name": "飞机",
+				"path": "sounds/variants/airplane.aac",
+				"icon": "mdi:airplane",
+				"color": "#00BFFF"
+			},
+			{
+				"name": "汽车车顶",
+				"path": "sounds/variants/car-roof.aac",
+				"icon": "mdi:car",
+				"color": "#000000"
+			},
+			{
+				"name": "火车",
+				"path": "sounds/variants/train.aac",
+				"icon": "mdi:train",
+				"color": "#A52A2A"
+			},
+			{
+				"name": "摩托艇",
+				"path": "sounds/variants/boat.aac",
+				"icon": "mdi:boat",
+				"color": "#4682B4"
+			}
+		]
+	},
+	{
+		"name": "日常生活",
+		"category": "daily",
+		"icon": "mdi:home",
+		"variants": [
+			{
+				"name": "铃声",
+				"path": "sounds/variants/bell.aac",
+				"icon": "mdi:bell",
+				"color": "#FFD700"
+			},
+			{
+				"name": "泡泡",
+				"path": "sounds/variants/bubble.aac",
+				"icon": "mdi:bubble",
+				"color": "#B0E0E6"
+			},
+			{
+				"name": "咖啡馆",
+				"path": "sounds/variants/cafe.aac",
+				"icon": "mdi:cafe",
+				"color": "#8B4513"
+			},
+			{
+				"name": "帐篷",
+				"path": "sounds/variants/tent.aac",
+				"icon": "mdi:tent",
+				"color": "#228B22"
+			},
+			{
+				"name": "打雷",
+				"path": "sounds/variants/thunder.aac",
+				"icon": "mdi:thunder",
+				"color": "#FFD700"
+			},
+			{
+				"name": "时钟滴答声",
+				"path": "sounds/variants/ticking_clock.aac",
+				"icon": "mdi:clock",
+				"color": "#A9A9A9"
+			},
+			{
+				"name": "铅笔",
+				"path": "sounds/variants/pencil.aac",
+				"icon": "mdi:pencil",
+				"color": "#FFD700"
+			},
+			{
+				"name": "玩具转轮",
+				"path": "sounds/variants/toy_ratchet.aac",
+				"icon": "mdi:gamepad",
+				"color": "#FF6347"
+			},
+			{
+				"name": "伞",
+				"path": "sounds/variants/umbrella.aac",
+				"icon": "mdi:umbrella",
+				"color": "#87CEEB"
+			},
+			{
+				"name": "屋顶",
+				"path": "sounds/variants/house-roof.aac",
+				"icon": "mdi:home",
+				"color": "#8B4513"
+			}
+		]
+	},
+	{
+		"name": "夜晚",
+		"category": "night",
+		"icon": "mdi:moon",
+		"variants": [
+			{
+				"name": "夜晚",
+				"path": "sounds/variants/night.aac",
+				"icon": "mdi:moon",
+				"color": "#191970"
+			}
+		]
+	},
+	{
+		"name": "工具",
+		"category": "tools",
+		"icon": "feather:wrench",
+		"variants": [
+			{
+				"name": "木鱼",
+				"path": "sounds/variants/muyu.aac",
+				"icon": "feather:guitar",
+				"color": "#A52A2A"
+			}
+		]
+	}
 ]

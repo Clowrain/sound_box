@@ -59,7 +59,7 @@ class QuickSoundGrid extends StatelessWidget {
               label: item.label,
               onTap: () => onSoundTap?.call(
                 itemKey,
-                _effectiveAssetPath(item.path, item.label),
+                item.path,
                 pool.preferredVolume(itemKey),
               ),
               breathingProgress: breathingProgress,
@@ -130,10 +130,4 @@ class _GridItem {
   final int variantIndex;
   final String path;
   final Color? color;
-}
-
-String _effectiveAssetPath(String basePath, String label) {
-  if (basePath.isEmpty) return '';
-  final fileName = label.endsWith('.m4a') ? label : '$label.m4a';
-  return '$basePath/$fileName';
 }

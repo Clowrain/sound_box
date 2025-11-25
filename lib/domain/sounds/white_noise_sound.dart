@@ -21,8 +21,7 @@ class WhiteNoiseSound {
 
   IconData get icon => _WhiteNoiseIcons.iconFor(iconName);
 
-  String get categoryLabel =>
-      _categoryLabels[category] ?? category.toUpperCase();
+  String get categoryLabel => name;
 
   WhiteNoiseSound copyWith({
     String? name,
@@ -63,16 +62,6 @@ class WhiteNoiseSound {
       color: _parseColor(json['color'] as String?),
     );
   }
-
-  static const Map<String, String> _categoryLabels = {
-    'background': '背景',
-    'ambient': '氛围',
-    'place': '场所',
-    'noise': '噪音',
-    'asmr': 'ASMR',
-    'lofi': 'Lo-Fi',
-    'other': '其他',
-  };
 }
 
 class WhiteNoiseSoundState {
