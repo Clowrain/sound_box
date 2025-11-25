@@ -1,16 +1,21 @@
-import 'dart:collection';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// 简易的音轨池，最多同时播放 [maxTracks] 条音轨。
 class SoundTrackPool {
-  SoundTrackPool._internal({this.maxTracks = 10});
+  SoundTrackPool._internal() : maxTracks = 10;
 
   static final SoundTrackPool instance = SoundTrackPool._internal();
 
   final int maxTracks;
   final Map<String, _Track> _tracks = {};
   final Map<String, double> _preferredVolumes = {};
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Future<void>? _restoreFuture;
+
+  static const _prefsKey = 'preferred_sound_volumes';
 
   /// 切换音轨播放/暂停，如果池已满且没有空闲轨道则直接返回。
   Future<void> toggleTrack({
@@ -21,7 +26,8 @@ class SoundTrackPool {
   }) async {
     if (path.isEmpty) return;
 
-    _preferredVolumes[key] = volume.clamp(0.0, 1.0);
+    await restorePreferredVolumes();
+    setPreferredVolume(key, volume);
     final existing = _tracks[key];
     if (existing != null) {
       existing.enabled = !existing.enabled;
@@ -66,7 +72,7 @@ class SoundTrackPool {
   /// 仅调整音量，不改变播放状态。
   Future<void> setVolume(String key, double volume) async {
     final clamped = volume.clamp(0.0, 1.0);
-    _preferredVolumes[key] = clamped;
+    _setPreferredVolumeInMemory(key, clamped);
     final track = _tracks[key];
     if (track == null) return;
     track.volume = clamped;
@@ -80,7 +86,8 @@ class SoundTrackPool {
 
   /// 仅记录预设音量，不触发播放器。
   void setPreferredVolume(String key, double volume) {
-    _preferredVolumes[key] = volume.clamp(0.0, 1.0);
+    _setPreferredVolumeInMemory(key, volume);
+    _persistPreferredVolumes();
   }
 
   /// 当前是否正在播放。
@@ -117,6 +124,40 @@ class SoundTrackPool {
     if (track == null) return;
     await track.player.stop();
     await track.player.dispose();
+  }
+
+  /// 启动时恢复上次的音量偏好。
+  Future<void> restorePreferredVolumes() {
+    _restoreFuture ??= _restorePreferredVolumes();
+    return _restoreFuture!;
+  }
+
+  Future<void> _restorePreferredVolumes() async {
+    final prefs = await _prefs;
+    final raw = prefs.getString(_prefsKey);
+    if (raw == null || raw.isEmpty) return;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) {
+        for (final entry in decoded.entries) {
+          final value = entry.value;
+          if (value is num) {
+            _preferredVolumes[entry.key] = value.toDouble().clamp(0.0, 1.0);
+          }
+        }
+      }
+    } catch (_) {
+      // ignore parse errors
+    }
+  }
+
+  void _setPreferredVolumeInMemory(String key, double volume) {
+    _preferredVolumes[key] = volume.clamp(0.0, 1.0);
+  }
+
+  Future<void> _persistPreferredVolumes() async {
+    final prefs = await _prefs;
+    await prefs.setString(_prefsKey, jsonEncode(_preferredVolumes));
   }
 }
 

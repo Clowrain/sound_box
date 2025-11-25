@@ -31,21 +31,14 @@ class SoundCard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        const double reservedControlWidth = 110;
         void handleDrag(double dx) {
           if (locked) return;
           final ratio = (dx / width).clamp(0, 1).toDouble();
           onVolumeChanged(ratio);
         }
 
-        bool isInControlZone(double dx) => dx >= width - reservedControlWidth;
-
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTapDown: (details) {
-            if (isInControlZone(details.localPosition.dx)) return;
-            handleDrag(details.localPosition.dx);
-          },
           onHorizontalDragStart: (details) =>
               handleDrag(details.localPosition.dx),
           onHorizontalDragUpdate: (details) =>
