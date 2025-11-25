@@ -34,7 +34,6 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.2.2
   audioplayers: ^6.5.1
-  iconify_flutter: ^0.0.7
 
 dev_dependencies:
   flutter_test:
@@ -61,14 +60,7 @@ flutter:
 
   assets:
     - assets/sounds/
-    - assets/sounds/variants
-
-  fonts:
-    - family: NotoSansSC
-      fonts:
-        - asset: assets/fonts/NotoSansSC-Regular.otf
-        - asset: assets/fonts/NotoSansSC-Bold.otf
-          weight: 700
+    - assets/sounds/variants/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

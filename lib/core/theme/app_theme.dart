@@ -8,11 +8,7 @@ ThemeData buildAppTheme() {
     surface: Color(0xFF0E111A),
   );
 
-  final baseTheme = ThemeData(
-    colorScheme: scheme,
-    useMaterial3: true,
-    fontFamily: 'NotoSansSC',
-  );
+  final baseTheme = ThemeData(colorScheme: scheme, useMaterial3: true);
 
   return baseTheme.copyWith(
     scaffoldBackgroundColor: scheme.surface,

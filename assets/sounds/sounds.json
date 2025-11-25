@@ -2,42 +2,42 @@
 	{
 		"name": "声音",
 		"category": "nature",
-		"icon": "mdi:tree",
+		"icon": "tree",
 		"variants": [
 			{
 				"name": "风铃",
 				"path": "sounds/variants/wind_chimes.aac",
-				"icon": "mdi:air",
+				"icon": "wind",
 				"color": "#B0E0E6"
 			},
 			{
 				"name": "森林",
 				"path": "sounds/variants/forest.aac",
-				"icon": "mdi:tree",
+				"icon": "tree",
 				"color": "#228B22"
 			},
 			{
 				"name": "海浪",
 				"path": "sounds/variants/sea_wave.aac",
-				"icon": "mdi:water",
+				"icon": "water",
 				"color": "#1E90FF"
 			},
 			{
 				"name": "雨声",
 				"path": "sounds/variants/rain.aac",
-				"icon": "mdi:cloud-rain",
+				"icon": "cloud-rain",
 				"color": "#ADD8E6"
 			},
 			{
 				"name": "河流/溪流",
 				"path": "sounds/variants/rivers_streams.aac",
-				"icon": "mdi:water-drop",
+				"icon": "water-lower",
 				"color": "#4682B4"
 			},
 			{
 				"name": "水滴",
 				"path": "sounds/variants/water_drops.aac",
-				"icon": "mdi:tint",
+				"icon": "tint",
 				"color": "#00BFFF"
 			}
 		]
@@ -45,36 +45,36 @@
 	{
 		"name": "动物",
 		"category": "animals",
-		"icon": "fa:paw",
+		"icon": "paw",
 		"variants": [
 			{
 				"name": "猫的呼噜",
 				"path": "sounds/variants/cat_purr.aac",
-				"icon": "fa:cat",
+				"icon": "cat",
 				"color": "#FF6347"
 			},
 			{
 				"name": "蝉鸣",
 				"path": "sounds/variants/cicada.aac",
-				"icon": "fa:bug",
+				"icon": "bug",
 				"color": "#FFD700"
 			},
 			{
 				"name": "海豚",
 				"path": "sounds/variants/dolphin.aac",
-				"icon": "fa:fish",
+				"icon": "fish",
 				"color": "#20B2AA"
 			},
 			{
 				"name": "驴叫",
 				"path": "sounds/variants/donkey.aac",
-				"icon": "fa:donkey",
+				"icon": "donkey",
 				"color": "#8B4513"
 			},
 			{
 				"name": "鲸鱼",
 				"path": "sounds/variants/whale.aac",
-				"icon": "fa:whale",
+				"icon": "whale",
 				"color": "#4682B4"
 			}
 		]
@@ -82,36 +82,36 @@
 	{
 		"name": "机械",
 		"category": "machines",
-		"icon": "feather:cogs",
+		"icon": "cogs",
 		"variants": [
 			{
 				"name": "钢琴键盘",
 				"path": "sounds/variants/keyboard.aac",
-				"icon": "feather:keyboard",
+				"icon": "keyboard",
 				"color": "#A9A9A9"
 			},
 			{
 				"name": "打印机",
 				"path": "sounds/variants/printer.aac",
-				"icon": "feather:printer",
+				"icon": "print",
 				"color": "#808080"
 			},
 			{
 				"name": "打字机",
 				"path": "sounds/variants/typewriter.aac",
-				"icon": "feather:keyboard",
+				"icon": "keyboard",
 				"color": "#D3D3D3"
 			},
 			{
 				"name": "风扇",
 				"path": "sounds/variants/fan.aac",
-				"icon": "feather:wind",
+				"icon": "fan",
 				"color": "#F0E68C"
 			},
 			{
 				"name": "暖炉",
 				"path": "sounds/variants/furnace.aac",
-				"icon": "feather:fire",
+				"icon": "fire",
 				"color": "#FF4500"
 			}
 		]
@@ -119,30 +119,30 @@
 	{
 		"name": "交通工具",
 		"category": "vehicles",
-		"icon": "mdi:car",
+		"icon": "car",
 		"variants": [
 			{
 				"name": "飞机",
 				"path": "sounds/variants/airplane.aac",
-				"icon": "mdi:airplane",
+				"icon": "plane",
 				"color": "#00BFFF"
 			},
 			{
 				"name": "汽车车顶",
 				"path": "sounds/variants/car-roof.aac",
-				"icon": "mdi:car",
+				"icon": "car",
 				"color": "#000000"
 			},
 			{
 				"name": "火车",
 				"path": "sounds/variants/train.aac",
-				"icon": "mdi:train",
+				"icon": "train",
 				"color": "#A52A2A"
 			},
 			{
 				"name": "摩托艇",
 				"path": "sounds/variants/boat.aac",
-				"icon": "mdi:boat",
+				"icon": "ship",
 				"color": "#4682B4"
 			}
 		]
@@ -150,66 +150,66 @@
 	{
 		"name": "日常生活",
 		"category": "daily",
-		"icon": "mdi:home",
+		"icon": "home",
 		"variants": [
 			{
 				"name": "铃声",
 				"path": "sounds/variants/bell.aac",
-				"icon": "mdi:bell",
+				"icon": "bell",
 				"color": "#FFD700"
 			},
 			{
 				"name": "泡泡",
 				"path": "sounds/variants/bubble.aac",
-				"icon": "mdi:bubble",
+				"icon": "bubble",
 				"color": "#B0E0E6"
 			},
 			{
 				"name": "咖啡馆",
 				"path": "sounds/variants/cafe.aac",
-				"icon": "mdi:cafe",
+				"icon": "coffee",
 				"color": "#8B4513"
 			},
 			{
 				"name": "帐篷",
 				"path": "sounds/variants/tent.aac",
-				"icon": "mdi:tent",
+				"icon": "tent",
 				"color": "#228B22"
 			},
 			{
 				"name": "打雷",
 				"path": "sounds/variants/thunder.aac",
-				"icon": "mdi:thunder",
+				"icon": "bolt",
 				"color": "#FFD700"
 			},
 			{
 				"name": "时钟滴答声",
 				"path": "sounds/variants/ticking_clock.aac",
-				"icon": "mdi:clock",
+				"icon": "clock",
 				"color": "#A9A9A9"
 			},
 			{
 				"name": "铅笔",
 				"path": "sounds/variants/pencil.aac",
-				"icon": "mdi:pencil",
+				"icon": "pencil-alt",
 				"color": "#FFD700"
 			},
 			{
 				"name": "玩具转轮",
 				"path": "sounds/variants/toy_ratchet.aac",
-				"icon": "mdi:gamepad",
+				"icon": "gamepad",
 				"color": "#FF6347"
 			},
 			{
 				"name": "伞",
 				"path": "sounds/variants/umbrella.aac",
-				"icon": "mdi:umbrella",
+				"icon": "umbrella",
 				"color": "#87CEEB"
 			},
 			{
 				"name": "屋顶",
 				"path": "sounds/variants/house-roof.aac",
-				"icon": "mdi:home",
+				"icon": "home",
 				"color": "#8B4513"
 			}
 		]
@@ -217,12 +217,12 @@
 	{
 		"name": "夜晚",
 		"category": "night",
-		"icon": "mdi:moon",
+		"icon": "moon",
 		"variants": [
 			{
 				"name": "夜晚",
 				"path": "sounds/variants/night.aac",
-				"icon": "mdi:moon",
+				"icon": "moon",
 				"color": "#191970"
 			}
 		]
@@ -230,12 +230,12 @@
 	{
 		"name": "工具",
 		"category": "tools",
-		"icon": "feather:wrench",
+		"icon": "wrench",
 		"variants": [
 			{
 				"name": "木鱼",
 				"path": "sounds/variants/muyu.aac",
-				"icon": "feather:guitar",
+				"icon": "guitar",
 				"color": "#A52A2A"
 			}
 		]

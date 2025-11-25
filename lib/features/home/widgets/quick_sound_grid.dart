@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 import 'package:sound_box/features/home/widgets/home_square_button.dart';
+import 'package:sound_box/shared/adaptive/adaptive_grid.dart';
 import 'package:sound_box/shared/audio/sound_track_pool.dart';
 import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
@@ -36,9 +37,10 @@ class QuickSoundGrid extends StatelessWidget {
         final availableWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : 320.0;
-        final computedCrossAxisCount = _resolveCrossAxisCount(
+        final computedCrossAxisCount = AdaptiveGrid.crossAxisCount(
           availableWidth,
-          min: crossAxisCount,
+          minCount: crossAxisCount,
+          gap: gap,
         );
 
         return GridView.builder(
@@ -105,13 +107,6 @@ class QuickSoundGrid extends StatelessWidget {
         )
         .toList();
   }
-}
-
-/// 计算屏幕允许的网格列数，避免窄屏过挤或宽屏浪费空间。
-int _resolveCrossAxisCount(double width, {int min = 3, int max = 6}) {
-  const targetSize = 72.0;
-  const gap = 12.0;
-  return (width / (targetSize + gap)).floor().clamp(min, max);
 }
 
 class _GridItem {
