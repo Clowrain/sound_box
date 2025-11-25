@@ -65,9 +65,7 @@ class _PinnedList extends StatelessWidget {
         itemBuilder: (context, index) {
           final entry = variants[index];
           final sound = entry.sound;
-          final label = entry.variant.name.isNotEmpty
-              ? entry.variant.name
-              : sound.name;
+          final label = sound.name;
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [

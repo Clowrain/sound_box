@@ -1,15 +1,16 @@
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 
+/// 固定音色的简化条目，直接指向单个音色。
 class PinnedVariantEntry {
   const PinnedVariantEntry({
     required this.sound,
-    required this.variant,
-    required this.variantIndex,
+    this.variantIndex = 0,
   });
 
   final WhiteNoiseSound sound;
-  final WhiteNoiseSoundVariant variant;
   final int variantIndex;
+
+  String get key => sound.id;
 }
 
 List<PinnedVariantEntry> pinnedEntriesFromKeys(
@@ -19,50 +20,14 @@ List<PinnedVariantEntry> pinnedEntriesFromKeys(
   final soundMap = {for (final sound in sounds) sound.id: sound};
   final result = <PinnedVariantEntry>[];
   for (final key in keys) {
-    final entry = _entryFromKey(key, soundMap);
-    if (entry != null) result.add(entry);
+    final normalizedKey = key.contains('::') ? key.split('::').first : key;
+    final sound = soundMap[normalizedKey];
+    if (sound != null) {
+      result.add(PinnedVariantEntry(sound: sound));
+    }
   }
   return result;
 }
 
-List<PinnedVariantEntry> variantEntriesForSound(WhiteNoiseSound sound) {
-  final variants = _effectiveVariants(sound);
-  return List.generate(
-    variants.length,
-    (index) => PinnedVariantEntry(
-      sound: sound,
-      variant: variants[index],
-      variantIndex: index,
-    ),
-  );
-}
-
-List<WhiteNoiseSoundVariant> _effectiveVariants(WhiteNoiseSound sound) {
-  return sound.variants.isNotEmpty
-      ? sound.variants
-      : [
-          WhiteNoiseSoundVariant(
-            name: sound.name,
-            path: '',
-            color: sound.color,
-          ),
-        ];
-}
-
-PinnedVariantEntry? _entryFromKey(
-  String key,
-  Map<String, WhiteNoiseSound> soundMap,
-) {
-  final parts = key.split('::');
-  if (parts.length != 2) return null;
-  final sound = soundMap[parts[0]];
-  if (sound == null) return null;
-  final index = int.tryParse(parts[1]) ?? 0;
-  final variants = _effectiveVariants(sound);
-  if (index < 0 || index >= variants.length) return null;
-  return PinnedVariantEntry(
-    sound: sound,
-    variant: variants[index],
-    variantIndex: index,
-  );
-}
+List<PinnedVariantEntry> variantEntriesForSound(WhiteNoiseSound sound) =>
+    [PinnedVariantEntry(sound: sound)];

@@ -5,23 +5,17 @@ class SoundCard extends StatelessWidget {
   const SoundCard({
     super.key,
     required this.sound,
-    required this.variant,
     required this.volume,
     required this.isPlaying,
     required this.onToggle,
     required this.onVolumeChanged,
-    required this.isPinned,
-    required this.onTogglePin,
   });
 
   final WhiteNoiseSound sound;
-  final WhiteNoiseSoundVariant variant;
   final double volume;
   final bool isPlaying;
   final VoidCallback onToggle;
   final ValueChanged<double> onVolumeChanged;
-  final bool isPinned;
-  final VoidCallback onTogglePin;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +24,9 @@ class SoundCard extends StatelessWidget {
     final actionIcon = locked
         ? Icons.lock_outline
         : isPlaying
-        ? Icons.pause_rounded
-        : Icons.play_arrow_rounded;
-    final pinIcon = isPinned ? Icons.push_pin : Icons.push_pin_outlined;
-    final title = variant.name.isNotEmpty ? variant.name : sound.name;
+            ? Icons.pause_rounded
+            : Icons.play_arrow_rounded;
+    final title = sound.name;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -114,8 +107,6 @@ class SoundCard extends StatelessWidget {
                       onPressed: locked ? null : onToggle,
                       muted: locked,
                     ),
-                    const SizedBox(width: 6),
-                    SoundCardIconButton(icon: pinIcon, onPressed: onTogglePin),
                   ],
                 ),
               ],

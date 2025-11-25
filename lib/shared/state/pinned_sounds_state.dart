@@ -14,13 +14,17 @@ class PinnedSoundsState extends ChangeNotifier {
 
   List<String> get pinnedKeys => List.unmodifiable(_pinned);
 
-  bool isPinned(String key) => _pinned.contains(key);
+  bool isPinned(String key) {
+    final normalized = _normalizeKey(key);
+    return _pinned.contains(normalized);
+  }
 
   void toggle(String key) {
-    if (_pinned.contains(key)) {
-      _pinned.remove(key);
+    final normalized = _normalizeKey(key);
+    if (_pinned.contains(normalized)) {
+      _pinned.remove(normalized);
     } else {
-      _pinned.add(key);
+      _pinned.add(normalized);
     }
     _persist();
     notifyListeners();
@@ -32,7 +36,7 @@ class PinnedSoundsState extends ChangeNotifier {
     if (stored != null) {
       _pinned
         ..clear()
-        ..addAll(stored);
+        ..addAll(stored.map(_normalizeKey));
       notifyListeners();
     }
   }
@@ -41,4 +45,6 @@ class PinnedSoundsState extends ChangeNotifier {
     final prefs = await _prefs;
     await prefs.setStringList(_prefsKey, _pinned.toList());
   }
+
+  String _normalizeKey(String key) => key.contains('::') ? key.split('::').first : key;
 }

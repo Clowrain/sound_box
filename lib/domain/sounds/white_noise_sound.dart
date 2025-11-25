@@ -1,42 +1,37 @@
 import 'package:flutter/material.dart';
 
+/// 单一音色模型，对应 sounds.json 中的扁平条目。
 class WhiteNoiseSound {
   const WhiteNoiseSound({
     required this.id,
     required this.name,
-    required this.category,
+    required this.path,
     required this.iconName,
-    required this.variants,
     this.color,
     this.locked = false,
   });
 
   final String id;
   final String name;
-  final String category;
+  final String path;
   final String iconName;
-  final List<WhiteNoiseSoundVariant> variants;
   final Color? color;
   final bool locked;
 
   IconData get icon => _WhiteNoiseIcons.iconFor(iconName);
 
-  String get categoryLabel => name;
-
   WhiteNoiseSound copyWith({
     String? name,
-    String? category,
+    String? path,
     String? iconName,
-    List<WhiteNoiseSoundVariant>? variants,
     Color? color,
     bool? locked,
   }) {
     return WhiteNoiseSound(
       id: id,
       name: name ?? this.name,
-      category: category ?? this.category,
+      path: path ?? this.path,
       iconName: iconName ?? this.iconName,
-      variants: variants ?? this.variants,
       color: color ?? this.color,
       locked: locked ?? this.locked,
     );
@@ -46,19 +41,11 @@ class WhiteNoiseSound {
     Map<String, dynamic> json, {
     required String id,
   }) {
-    final variants = (json['variants'] as List<dynamic>? ?? const [])
-        .map(
-          (variant) =>
-              WhiteNoiseSoundVariant.fromJson(variant as Map<String, dynamic>),
-        )
-        .toList(growable: false);
-
     return WhiteNoiseSound(
       id: id,
       name: json['name'] as String? ?? id,
-      category: json['category'] as String? ?? 'other',
+      path: json['path'] as String? ?? '',
       iconName: json['icon'] as String? ?? 'graphic-eq',
-      variants: variants,
       color: _parseColor(json['color'] as String?),
     );
   }
@@ -76,26 +63,6 @@ class WhiteNoiseSoundState {
       isPlaying: isPlaying ?? this.isPlaying,
     );
   }
-}
-
-class WhiteNoiseSoundVariant {
-  const WhiteNoiseSoundVariant({
-    required this.name,
-    required this.path,
-    this.color,
-  });
-
-  factory WhiteNoiseSoundVariant.fromJson(Map<String, dynamic> json) {
-    return WhiteNoiseSoundVariant(
-      name: json['name'] as String? ?? '',
-      path: json['path'] as String? ?? '',
-      color: _parseColor(json['color'] as String?),
-    );
-  }
-
-  final String name;
-  final String path;
-  final Color? color;
 }
 
 class _WhiteNoiseIcons {

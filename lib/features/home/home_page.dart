@@ -6,9 +6,7 @@ import 'package:sound_box/core/router/sound_routes.dart';
 import 'package:sound_box/features/home/widgets/breathing_light_icon.dart';
 import 'package:sound_box/features/home/widgets/home_layouts.dart';
 import 'package:sound_box/shared/audio/sound_track_pool.dart';
-import 'package:sound_box/shared/state/pinned_sounds_state.dart';
 import 'package:sound_box/shared/state/sound_selection_state.dart';
-import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 应用首页，负责时钟刷新与精选音效入口。
 class HomePage extends StatefulWidget {
@@ -103,12 +101,7 @@ class _HomePageState extends State<HomePage>
             child: OrientationBuilder(
               builder: (context, orientation) {
                 final selection = context.watch<SoundSelectionState>();
-                final pinnedState = context.watch<PinnedSoundsState>();
                 final featured = selection.primary(8);
-                final pinnedEntries = pinnedEntriesFromKeys(
-                  pinnedState.pinnedKeys,
-                  selection.sounds,
-                );
                 final isPortrait = orientation == Orientation.portrait;
 
                 return _HomeSurfaceCard(
@@ -118,7 +111,6 @@ class _HomePageState extends State<HomePage>
                           nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
-                          pinnedEntries: pinnedEntries,
                           breathingProgress: _breathingProgress,
                           activeBreathingIds: _activeBreathingIds,
                           onBreathingChanged: _toggleBreathing,
@@ -128,7 +120,6 @@ class _HomePageState extends State<HomePage>
                           nowListenable: _nowNotifier,
                           onPrimaryAction: _openSounds,
                           featuredSounds: featured,
-                          pinnedEntries: pinnedEntries,
                           breathingProgress: _breathingProgress,
                           activeBreathingIds: _activeBreathingIds,
                           onBreathingChanged: _toggleBreathing,

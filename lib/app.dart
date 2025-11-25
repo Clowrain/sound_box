@@ -5,7 +5,6 @@ import 'package:sound_box/core/theme/app_theme.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 import 'package:sound_box/features/home/home_page.dart';
 import 'package:sound_box/features/sounds/sounds_page.dart';
-import 'package:sound_box/shared/state/pinned_sounds_state.dart';
 import 'package:sound_box/shared/state/sound_selection_state.dart';
 
 class SoundBoxApp extends StatelessWidget {
@@ -22,7 +21,6 @@ class SoundBoxApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SoundSelectionState(initialOrder: initialSounds),
         ),
-        ChangeNotifierProvider(create: (_) => PinnedSoundsState()),
       ],
       child: MaterialApp(
         title: 'Sound Box',

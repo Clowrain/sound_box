@@ -3,7 +3,6 @@ import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 import 'package:sound_box/features/home/widgets/home_square_button.dart';
 import 'package:sound_box/shared/adaptive/adaptive_grid.dart';
 import 'package:sound_box/shared/audio/sound_track_pool.dart';
-import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 精选音效网格，根据可用宽度自适应列数，兼顾移动端与桌面端。
 class QuickSoundGrid extends StatelessWidget {
@@ -11,7 +10,6 @@ class QuickSoundGrid extends StatelessWidget {
     super.key,
     required this.sounds,
     this.crossAxisCount = 3,
-    this.pinnedEntries = const [],
     this.breathingProgress,
     this.activeBreathingIds = const {},
     this.onBreathingChanged,
@@ -20,7 +18,6 @@ class QuickSoundGrid extends StatelessWidget {
 
   final List<WhiteNoiseSound> sounds;
   final int crossAxisCount;
-  final List<PinnedVariantEntry> pinnedEntries;
   final Animation<double>? breathingProgress;
   final Set<String> activeBreathingIds;
   final void Function(String id, bool active)? onBreathingChanged;
@@ -54,7 +51,7 @@ class QuickSoundGrid extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            final itemKey = '${item.soundId}::${item.variantIndex}';
+            final itemKey = item.soundId;
             final itemId = 'quick_${index}_${item.label}';
             return HomeSquareButton(
               icon: item.icon,
@@ -78,22 +75,6 @@ class QuickSoundGrid extends StatelessWidget {
 
   /// 计算可显示的网格项。
   List<_GridItem> _gridItems() {
-    if (pinnedEntries.isNotEmpty) {
-      return pinnedEntries
-          .map(
-            (entry) => _GridItem(
-              icon: entry.sound.icon,
-              label: entry.variant.name.isNotEmpty
-                  ? entry.variant.name
-                  : entry.sound.name,
-              color: entry.variant.color ?? entry.sound.color,
-              soundId: entry.sound.id,
-              variantIndex: entry.variantIndex,
-              path: entry.variant.path,
-            ),
-          )
-          .toList();
-    }
     return sounds
         .map(
           (sound) => _GridItem(
@@ -101,8 +82,7 @@ class QuickSoundGrid extends StatelessWidget {
             label: sound.name,
             color: sound.color,
             soundId: sound.id,
-            variantIndex: 0,
-            path: sound.variants.isNotEmpty ? sound.variants.first.path : '',
+            path: sound.path,
           ),
         )
         .toList();
@@ -114,7 +94,6 @@ class _GridItem {
     required this.icon,
     required this.label,
     required this.soundId,
-    required this.variantIndex,
     required this.path,
     this.color,
   });
@@ -122,7 +101,6 @@ class _GridItem {
   final IconData icon;
   final String label;
   final String soundId;
-  final int variantIndex;
   final String path;
   final Color? color;
 }

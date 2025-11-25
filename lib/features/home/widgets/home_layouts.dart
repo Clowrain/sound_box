@@ -4,7 +4,6 @@ import 'package:sound_box/features/home/widgets/display_surface.dart';
 import 'package:sound_box/features/home/widgets/home_controls.dart';
 import 'package:sound_box/features/home/widgets/home_side_pill.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
-import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 根据横竖屏切换的主页布局。
 class HomePortraitLayout extends StatelessWidget {
@@ -13,7 +12,6 @@ class HomePortraitLayout extends StatelessWidget {
     required this.nowListenable,
     required this.onPrimaryAction,
     required this.featuredSounds,
-    required this.pinnedEntries,
     required this.breathingProgress,
     required this.activeBreathingIds,
     required this.onBreathingChanged,
@@ -23,7 +21,6 @@ class HomePortraitLayout extends StatelessWidget {
   final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
-  final List<PinnedVariantEntry> pinnedEntries;
   final Animation<double>? breathingProgress;
   final Set<String> activeBreathingIds;
   final void Function(String id, bool active) onBreathingChanged;
@@ -53,7 +50,6 @@ class HomePortraitLayout extends StatelessWidget {
                 flex: 3,
                 child: QuickSoundGrid(
                   sounds: featuredSounds,
-                  pinnedEntries: pinnedEntries,
                   breathingProgress: breathingProgress,
                   activeBreathingIds: activeBreathingIds,
                   onBreathingChanged: onBreathingChanged,
@@ -74,7 +70,6 @@ class HomeLandscapeLayout extends StatelessWidget {
     required this.nowListenable,
     required this.onPrimaryAction,
     required this.featuredSounds,
-    required this.pinnedEntries,
     required this.breathingProgress,
     required this.activeBreathingIds,
     required this.onBreathingChanged,
@@ -84,7 +79,6 @@ class HomeLandscapeLayout extends StatelessWidget {
   final ValueListenable<DateTime> nowListenable;
   final VoidCallback onPrimaryAction;
   final List<WhiteNoiseSound> featuredSounds;
-  final List<PinnedVariantEntry> pinnedEntries;
   final Animation<double>? breathingProgress;
   final Set<String> activeBreathingIds;
   final void Function(String id, bool active) onBreathingChanged;
@@ -150,7 +144,6 @@ class HomeLandscapeLayout extends StatelessWidget {
                 child: QuickSoundGrid(
                   sounds: featuredSounds,
                   crossAxisCount: 2,
-                  pinnedEntries: pinnedEntries,
                   breathingProgress: breathingProgress,
                   activeBreathingIds: activeBreathingIds,
                   onBreathingChanged: onBreathingChanged,
