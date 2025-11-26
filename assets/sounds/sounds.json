@@ -1,9 +1,93 @@
 [
   {
-    "name": "河流/溪流",
+    "name": "涓涓细雨",
+    "path": "sounds/variants/rain.aac",
+    "icon": "cloud-rain",
+    "color": "#ADD8E6"
+  },
+  {
+    "name": "篝火冉冉",
+    "path": "sounds/variants/furnace.aac",
+    "icon": "fire",
+    "color": "#FF4500"
+  },
+  {
+    "name": "雨打车顶",
+    "path": "sounds/variants/car-roof.aac",
+    "icon": "car",
+    "color": "#000000"
+  },
+  {
+    "name": "雨打帐篷",
+    "path": "sounds/variants/tent.aac",
+    "icon": "tent",
+    "color": "#228B22"
+  },
+  {
+    "name": "雨中打伞",
+    "path": "sounds/variants/umbrella.aac",
+    "icon": "umbrella",
+    "color": "#87CEEB"
+  },
+  {
+    "name": "雨打屋顶",
+    "path": "sounds/variants/house-roof.aac",
+    "icon": "home",
+    "color": "#8B4513"
+  },
+  {
+    "name": "阑夜虫鸣",
+    "path": "sounds/variants/night.aac",
+    "icon": "moon",
+    "color": "#191970"
+  },
+  {
+    "name": "夏雷阵阵",
+    "path": "sounds/variants/thunder.aac",
+    "icon": "bolt",
+    "color": "#FFD700"
+  },
+  {
+    "name": "流水潺潺",
     "path": "sounds/variants/rivers_streams.aac",
     "icon": "water-lower",
     "color": "#4682B4"
+  },
+  {
+    "name": "静谧森林",
+    "path": "sounds/variants/forest.aac",
+    "icon": "tree",
+    "color": "#228B22"
+  },
+  {
+    "name": "沧海桑田",
+    "path": "sounds/variants/sea_wave.aac",
+    "icon": "water",
+    "color": "#1E90FF"
+  },
+  {
+    "name": "猫儿梦呓",
+    "path": "sounds/variants/cat_purr.aac",
+    "icon": "cat",
+    "color": "#FF6347"
+  },
+  {
+    "name": "机械键盘",
+    "path": "sounds/variants/keyboard.aac",
+    "icon": "keyboard",
+    "color": "#A9A9A9"
+  },
+  {
+    "name": "打印机",
+    "path": "sounds/variants/printer.aac",
+    "icon": "print",
+    "color": "#808080"
+  },
+  {
+    "name": "打字机",
+    "path": "sounds/variants/typewriter.aac",
+    "icon": "keyboard",
+    "color": "#D3D3D3"
   },
   {
     "name": "风铃",
@@ -12,34 +96,10 @@
     "color": "#B0E0E6"
   },
   {
-    "name": "森林",
-    "path": "sounds/variants/forest.aac",
-    "icon": "tree",
-    "color": "#228B22"
-  },
-  {
-    "name": "海浪",
-    "path": "sounds/variants/sea_wave.aac",
-    "icon": "water",
-    "color": "#1E90FF"
-  },
-  {
-    "name": "雨声",
-    "path": "sounds/variants/rain.aac",
-    "icon": "cloud-rain",
-    "color": "#ADD8E6"
-  },
-  {
     "name": "水滴",
     "path": "sounds/variants/water_drops.aac",
     "icon": "tint",
     "color": "#00BFFF"
-  },
-  {
-    "name": "猫的呼噜",
-    "path": "sounds/variants/cat_purr.aac",
-    "icon": "cat",
-    "color": "#FF6347"
   },
   {
     "name": "蝉鸣",
@@ -66,34 +126,10 @@
     "color": "#4682B4"
   },
   {
-    "name": "钢琴键盘",
-    "path": "sounds/variants/keyboard.aac",
-    "icon": "keyboard",
-    "color": "#A9A9A9"
-  },
-  {
-    "name": "打印机",
-    "path": "sounds/variants/printer.aac",
-    "icon": "print",
-    "color": "#808080"
-  },
-  {
-    "name": "打字机",
-    "path": "sounds/variants/typewriter.aac",
-    "icon": "keyboard",
-    "color": "#D3D3D3"
-  },
-  {
     "name": "风扇",
     "path": "sounds/variants/fan.aac",
     "icon": "fan",
     "color": "#F0E68C"
-  },
-  {
-    "name": "暖炉",
-    "path": "sounds/variants/furnace.aac",
-    "icon": "fire",
-    "color": "#FF4500"
   },
   {
     "name": "飞机",
@@ -102,25 +138,13 @@
     "color": "#00BFFF"
   },
   {
-    "name": "汽车车顶",
-    "path": "sounds/variants/car-roof.aac",
-    "icon": "car",
-    "color": "#000000"
-  },
-  {
     "name": "火车",
     "path": "sounds/variants/train.aac",
     "icon": "train",
     "color": "#A52A2A"
   },
   {
-    "name": "摩托艇",
-    "path": "sounds/variants/boat.aac",
-    "icon": "ship",
-    "color": "#4682B4"
-  },
-  {
-    "name": "铃声",
+    "name": "钟鸣",
     "path": "sounds/variants/bell.aac",
     "icon": "bell",
     "color": "#FFD700"
@@ -132,25 +156,13 @@
     "color": "#B0E0E6"
   },
   {
-    "name": "咖啡馆",
+    "name": "咖啡",
     "path": "sounds/variants/cafe.aac",
     "icon": "coffee",
     "color": "#8B4513"
   },
   {
-    "name": "帐篷",
-    "path": "sounds/variants/tent.aac",
-    "icon": "tent",
-    "color": "#228B22"
-  },
-  {
-    "name": "打雷",
-    "path": "sounds/variants/thunder.aac",
-    "icon": "bolt",
-    "color": "#FFD700"
-  },
-  {
-    "name": "时钟滴答声",
+    "name": "时钟",
     "path": "sounds/variants/ticking_clock.aac",
     "icon": "clock",
     "color": "#A9A9A9"
@@ -162,28 +174,10 @@
     "color": "#FFD700"
   },
   {
-    "name": "玩具转轮",
+    "name": "棘轮",
     "path": "sounds/variants/toy_ratchet.aac",
     "icon": "gamepad",
     "color": "#FF6347"
-  },
-  {
-    "name": "伞",
-    "path": "sounds/variants/umbrella.aac",
-    "icon": "umbrella",
-    "color": "#87CEEB"
-  },
-  {
-    "name": "屋顶",
-    "path": "sounds/variants/house-roof.aac",
-    "icon": "home",
-    "color": "#8B4513"
-  },
-  {
-    "name": "夜晚",
-    "path": "sounds/variants/night.aac",
-    "icon": "moon",
-    "color": "#191970"
   },
   {
     "name": "木鱼",
