@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>development</string> <!-- 使用开发证书，不进行签名 -->
+    <key>signingStyle</key>
+    <string>automatic</string>
+  </dict>
+</plist>
