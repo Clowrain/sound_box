@@ -1,4 +1,4 @@
-name: Build & Release Flutter App
+name: Build & Release sound_box
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   # ============================
-  # 1. 构建 Android（APK + AAB）
+  # 1. Android（APK + AAB）
   # ============================
   build-android:
     runs-on: ubuntu-latest
@@ -22,46 +22,49 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Set up Flutter
+      - name: Set up Flutter (from pubspec.yaml)
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version-file: pubspec.yaml
+          flutter-version-file: pubspec.yaml  # 从 pubspec 读取 flutter 版本
           cache: true
-
-      # 如果你在国内，可以打开下面两行，加速依赖下载
-      #   env:
-      #     FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
-      #     PUB_HOSTED_URL: https://pub.flutter-io.cn
 
       - name: Flutter pub get
         run: flutter pub get
 
+      # ---- Build APK ----
       - name: Build Android APK
         run: flutter build apk --release
 
+      # ---- Build AAB ----
       - name: Build Android App Bundle
         run: flutter build appbundle --release
+
+      # ---- Rename outputs to sound_box.xxx ----
+      - name: Rename Android outputs
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk sound_box.apk
+          mv build/app/outputs/bundle/release/app-release.aab sound_box.aab
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-artifacts
           path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+            sound_box.apk
+            sound_box.aab
 
   # ============================
-  # 2. 构建 macOS + iOS
+  # 2. macOS DMG + iOS IPA
   # ============================
   build-macos-ios:
-    runs-on: macos-latest   # iOS & macOS 必须用 macos runner
+    runs-on: macos-latest   # macOS & iOS 必须用 macOS runner
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      - name: Set up Flutter (from pubspec.yaml)
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -71,31 +74,46 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # --- macOS ---
+      # -------- macOS: sound_box.dmg --------
       - name: Build macOS app
         run: flutter build macos --release
 
-      - name: Zip macOS app
+      - name: Create sound_box.dmg
         run: |
           cd build/macos/Build/Products/Release
-          # 如果你的 app 名叫 MyApp.app，可以写死；这里通配 *.app
-          zip -r macos-app.zip *.app
+          APP_BUNDLE=$(ls *.app | head -n 1)
+          echo "Using macOS app: $APP_BUNDLE"
+          # 生成 DMG，卷标名也叫 sound_box
+          hdiutil create -volname "sound_box" \
+            -srcfolder "$APP_BUNDLE" \
+            -ov -format UDZO "sound_box.dmg"
+          # 挪到仓库根目录，便于 upload-artifact
+          mv sound_box.dmg ../../../..
+          cd ../../../..
 
-      # --- iOS ---
-      # 这里用 --no-codesign，适合先跑通 CI；真正发 App Store 需要额外配置证书和 ExportOptions.plist，并改成 flutter build ipa
-      - name: Build iOS app (no codesign)
-        run: flutter build ios --release --no-codesign
+      # -------- iOS: sound_box.ipa --------
+      - name: Build iOS app (no signing)
+        run: |
+          # 跳过签名过程
+          flutter build ios --release --no-codesign  # 跳过签名过程
+          flutter build ipa --release --no-codesign  # 生成未签名的 ipa 文件
+          cd build/ios/ipa
+          IPA_FILE=$(ls *.ipa | head -n 1)
+          echo "Built ipa: $IPA_FILE"
+          mv "$IPA_FILE" sound_box.ipa
+          mv sound_box.ipa ../../..
+          cd ../../..
 
       - name: Upload macOS & iOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-ios-artifacts
           path: |
-            build/macos/Build/Products/Release/macos-app.zip
-            build/ios/iphoneos/*.app
+            sound_box.dmg
+            sound_box.ipa
 
   # ============================
-  # 3. 创建 GitHub Release 并上传安装包
+  # 3. 创建 GitHub Release 并上传产物
   # ============================
   create-release:
     runs-on: ubuntu-latest
@@ -112,23 +130,28 @@ jobs:
         with:
           path: dist
 
-      - name: Show downloaded files (debug)
+      - name: Show downloaded files
         run: ls -R dist
+
+      # 可选：从 pubspec.yaml 解析版本号作为 tag（简单 awk 版）
+      - name: Read version from pubspec.yaml
+        run: |
+          VERSION=$(awk -F': ' '/^version:/ {gsub("\\+", "-", $2); print $2}' pubspec.yaml)
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Show version
+        run: echo "App version from pubspec.yaml = $APP_VERSION"
 
       - name: Create GitHub Release & upload assets
         uses: softprops/action-gh-release@v2
         with:
-          # 给这次构建自动生成一个 tag（避免重复）
-          tag_name: release-${{ github.run_number }}
-          name: "Release ${{ github.run_number }} (${{
-            github.ref_name
-          }})"
+          tag_name: v${{ env.APP_VERSION }}      # 例如 v1.0.0-1
+          name: "sound_box ${{ env.APP_VERSION }}"
           draft: false
           prerelease: false
           files: |
-            dist/android-artifacts/app-release.apk
-            dist/android-artifacts/app-release.aab
-            dist/macos-ios-artifacts/macos-app.zip
-            dist/macos-ios-artifacts/*.app
+            dist/android-artifacts/sound_box.apk
+            dist/android-artifacts/sound_box.aab
+            dist/macos-ios-artifacts/sound_box.dmg
+            dist/macos-ios-artifacts/sound_box.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
