@@ -1,0 +1,134 @@
+name: Build & Release Flutter App
+
+on:
+  push:
+    branches:
+      - release   # 合并到 release 分支时触发
+
+jobs:
+  # ============================
+  # 1. 构建 Android（APK + AAB）
+  # ============================
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java (for Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      # 如果你在国内，可以打开下面两行，加速依赖下载
+      #   env:
+      #     FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
+      #     PUB_HOSTED_URL: https://pub.flutter-io.cn
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-artifacts
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+
+  # ============================
+  # 2. 构建 macOS + iOS
+  # ============================
+  build-macos-ios:
+    runs-on: macos-latest   # iOS & macOS 必须用 macos runner
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # --- macOS ---
+      - name: Build macOS app
+        run: flutter build macos --release
+
+      - name: Zip macOS app
+        run: |
+          cd build/macos/Build/Products/Release
+          # 如果你的 app 名叫 MyApp.app，可以写死；这里通配 *.app
+          zip -r macos-app.zip *.app
+
+      # --- iOS ---
+      # 这里用 --no-codesign，适合先跑通 CI；真正发 App Store 需要额外配置证书和 ExportOptions.plist，并改成 flutter build ipa
+      - name: Build iOS app (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload macOS & iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-ios-artifacts
+          path: |
+            build/macos/Build/Products/Release/macos-app.zip
+            build/ios/iphoneos/*.app
+
+  # ============================
+  # 3. 创建 GitHub Release 并上传安装包
+  # ============================
+  create-release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-android
+      - build-macos-ios
+
+    permissions:
+      contents: write   # 需要写权限创建 Release
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Show downloaded files (debug)
+        run: ls -R dist
+
+      - name: Create GitHub Release & upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          # 给这次构建自动生成一个 tag（避免重复）
+          tag_name: release-${{ github.run_number }}
+          name: "Release ${{ github.run_number }} (${{
+            github.ref_name
+          }})"
+          draft: false
+          prerelease: false
+          files: |
+            dist/android-artifacts/app-release.apk
+            dist/android-artifacts/app-release.aab
+            dist/macos-ios-artifacts/macos-app.zip
+            dist/macos-ios-artifacts/*.app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
