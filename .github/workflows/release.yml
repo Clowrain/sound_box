@@ -52,8 +52,9 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -archivePath $PWD/build/ios/archive/Runner.xcarchive archive \
-            -allowProvisioningUpdates \
-            CODE_SIGNING_REQUIRED=NO
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
 
           # 2. 导出 .ipa 文件
           xcodebuild -exportArchive \
