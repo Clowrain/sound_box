@@ -1,122 +1,253 @@
 import 'dart:convert';
+import 'dart:developer'; // log()
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 简易的音轨池，最多同时播放 [maxTracks] 条音轨。
+/// 简易的音轨池（just_audio 版本）
+/// - 最多同时存在 [maxTracks] 条 AudioPlayer 实例
+/// - 使用 key + path + volume 管理音轨
+/// - 支持：toggleTrack / setVolume / isPlaying / dispose
+/// - 使用 audio_session 做音频会话配置
 class SoundTrackPool {
   SoundTrackPool._internal() : maxTracks = 10;
 
   static final SoundTrackPool instance = SoundTrackPool._internal();
 
   final int maxTracks;
+
+  /// 空闲超过这个时间且未启用的轨道会被自动清理
+  static const Duration idleTimeout = Duration(minutes: 5);
+
   final Map<String, _Track> _tracks = {};
   final Map<String, double> _preferredVolumes = {};
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Future<void>? _restoreFuture;
 
+  bool _audioSessionInitialized = false;
+  bool _disposed = false;
+
   static const _prefsKey = 'preferred_sound_volumes';
 
-  /// 切换音轨播放/暂停，如果池已满且没有空闲轨道则直接返回。
   Future<void> toggleTrack({
     required String key,
     required String path,
     required double volume,
     bool loop = true,
   }) async {
-    if (path.isEmpty) return;
-
-    await restorePreferredVolumes();
-    setPreferredVolume(key, volume);
-    final existing = _tracks[key];
-    if (existing != null) {
-      existing.enabled = !existing.enabled;
-      existing.lastUsed = DateTime.now();
-      if (existing.enabled) {
-        existing.volume = _preferredVolumes[key]!;
-        await existing.player.setVolume(existing.volume);
-        await existing.player.resume();
-      } else {
-        await existing.player.pause();
-      }
+    if (_disposed) {
+      log('[SoundTrackPool] toggleTrack ignored, pool disposed. key=$key');
+      return;
+    }
+    if (path.isEmpty) {
+      log('[SoundTrackPool] toggleTrack ignored, empty path. key=$key');
       return;
     }
 
+    await _initAudioSessionIfNeeded();
+    await restorePreferredVolumes();
+
+    setPreferredVolume(key, volume);
+    final now = DateTime.now();
+
+    await _cleanupIdleTracks(now);
+
+    final existing = _tracks[key];
+
+    log(
+      '[SoundTrackPool] toggleTrack: key=$key '
+      'path=$path volume=${_preferredVolumes[key]} '
+      'hasExisting=${existing != null}',
+    );
+
+    // ===== 已有轨道 =====
+    if (existing != null) {
+      log(
+        '[SoundTrackPool] toggleTrack(existing): '
+        'before enabled=${existing.enabled} '
+        'player.playing=${existing.player.playing} '
+        'track.path=${existing.path}',
+      );
+
+      existing.enabled = !existing.enabled;
+      existing.lastUsed = now;
+
+      try {
+        if (existing.enabled) {
+          if (existing.path != path) {
+            log(
+              '[SoundTrackPool] existing path changed: '
+              '${existing.path} -> $path, reload source',
+            );
+            existing.path = path;
+            existing.sourcePrepared = false;
+          }
+
+          if (!existing.sourcePrepared) {
+            log(
+              '[SoundTrackPool] existing setAudioSource: key=$key path=${existing.path}',
+            );
+            await existing.player.setAudioSource(
+              AudioSource.asset(existing.path),
+            );
+            await existing.player.setLoopMode(
+              loop ? LoopMode.one : LoopMode.off,
+            );
+            existing.sourcePrepared = true;
+          }
+
+          existing.volume = _preferredVolumes[key]!;
+          log(
+            '[SoundTrackPool] existing play: key=$key volume=${existing.volume} loop=$loop',
+          );
+
+          await existing.player.setVolume(existing.volume);
+          existing.player.play(); // 不 await
+        } else {
+          log('[SoundTrackPool] existing pause: key=$key');
+          await existing.player.pause();
+        }
+      } catch (e, st) {
+        log(
+          '[SoundTrackPool] ERROR in toggleTrack(existing): key=$key error=$e\n$st',
+        );
+      }
+
+      log(
+        '[SoundTrackPool] toggleTrack(existing) done: '
+        'enabled=${existing.enabled} player.playing=${existing.player.playing}',
+      );
+      return;
+    }
+
+    // ===== 新轨道 =====
+
     if (_tracks.length >= maxTracks) {
-      final evictedKey = _evictCandidateKey();
+      final evictedKey = _evictCandidateKey(now);
+      log(
+        '[SoundTrackPool] pool full: size=${_tracks.length}, evictCandidate=$evictedKey',
+      );
       if (evictedKey == null) return;
       await _disposeTrack(evictedKey);
     }
 
     final player = AudioPlayer();
-    await player.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.stop);
-    // 便于排查音频路径问题。
-    // ignore: avoid_print
-    print(
-      '[SoundTrackPool] play key=$key path=$path volume=${_preferredVolumes[key]}',
-    );
-    await player.setSource(AssetSource(path, mimeType: 'audio/mp3'));
-    final clampedVolume = _preferredVolumes[key]!;
-    await player.setVolume(clampedVolume);
-    await player.resume();
 
-    _tracks[key] = _Track(
-      player: player,
-      path: path,
-      volume: clampedVolume,
-      enabled: true,
-      lastUsed: DateTime.now(),
+    log(
+      '[SoundTrackPool] create new track: key=$key path=$path volume=${_preferredVolumes[key]} loop=$loop',
     );
+
+    try {
+      await player.setAudioSource(AudioSource.asset(path));
+      await player.setLoopMode(loop ? LoopMode.one : LoopMode.off);
+
+      final clampedVolume = _preferredVolumes[key]!;
+      await player.setVolume(clampedVolume);
+      player.play(); // 不 await
+
+      _tracks[key] = _Track(
+        player: player,
+        path: path,
+        volume: clampedVolume,
+        enabled: true,
+        lastUsed: now,
+        sourcePrepared: true,
+      );
+
+      log(
+        '[SoundTrackPool] new track started: key=$key player.playing=${player.playing}',
+      );
+    } catch (e, st) {
+      log(
+        '[SoundTrackPool] ERROR create new track: key=$key path=$path error=$e\n$st',
+      );
+      await player.dispose();
+    }
   }
 
-  /// 仅调整音量，不改变播放状态。
+  /// 音量调整，不改变播放状态
   Future<void> setVolume(String key, double volume) async {
     final clamped = volume.clamp(0.0, 1.0);
     _setPreferredVolumeInMemory(key, clamped);
+
     final track = _tracks[key];
     if (track == null) return;
+
     track.volume = clamped;
     if (track.enabled) {
       await track.player.setVolume(clamped);
     }
   }
 
-  /// 获取预设音量，默认 0.6。
   double preferredVolume(String key) => _preferredVolumes[key] ?? 0.6;
 
-  /// 仅记录预设音量，不触发播放器。
   void setPreferredVolume(String key, double volume) {
     _setPreferredVolumeInMemory(key, volume);
     _persistPreferredVolumes();
   }
 
-  /// 当前是否正在播放。
   bool isPlaying(String key) => _tracks[key]?.enabled ?? false;
 
-  /// 停止并释放所有轨道。
   Future<void> dispose() async {
+    _disposed = true;
     for (final entry in _tracks.entries) {
       await entry.value.player.dispose();
     }
     _tracks.clear();
   }
 
-  String? _evictCandidateKey() {
-    // 优先选择已停用的轨道，其次选最久未使用的。
+  Future<void> stop(String key) async {
+    final track = _tracks[key];
+    if (track == null) return;
+    track.enabled = false;
+    track.lastUsed = DateTime.now();
+    await track.player.stop();
+  }
+
+  Future<void> pauseAll() async {
+    final now = DateTime.now();
+    for (final entry in _tracks.entries) {
+      final track = entry.value;
+      if (track.enabled) {
+        track.lastUsed = now;
+        await track.player.pause();
+      }
+    }
+  }
+
+  Future<void> resumeAll({bool loop = true}) async {
+    final now = DateTime.now();
+    for (final entry in _tracks.entries) {
+      final track = entry.value;
+      if (track.enabled) {
+        track.lastUsed = now;
+
+        if (!track.sourcePrepared) {
+          await track.player.setAudioSource(AudioSource.asset(track.path));
+          await track.player.setLoopMode(loop ? LoopMode.one : LoopMode.off);
+          track.sourcePrepared = true;
+        }
+
+        track.player.play();
+      }
+    }
+  }
+
+  String? _evictCandidateKey(DateTime now) {
+    if (_tracks.isEmpty) return null;
+
     final disabled = _tracks.entries
-        .where((entry) => entry.value.enabled == false)
-        .toList(growable: false);
+        .where((e) => e.value.enabled == false)
+        .toList();
     if (disabled.isNotEmpty) {
       disabled.sort((a, b) => a.value.lastUsed.compareTo(b.value.lastUsed));
       return disabled.first.key;
     }
-    if (_tracks.isEmpty) return null;
-    return _tracks.entries
-        .reduce(
-          (prev, curr) =>
-              prev.value.lastUsed.isBefore(curr.value.lastUsed) ? prev : curr,
-        )
-        .key;
+
+    return _tracks.entries.reduce((prev, curr) {
+      return prev.value.lastUsed.isBefore(curr.value.lastUsed) ? prev : curr;
+    }).key;
   }
 
   Future<void> _disposeTrack(String key) async {
@@ -126,7 +257,6 @@ class SoundTrackPool {
     await track.player.dispose();
   }
 
-  /// 启动时恢复上次的音量偏好。
   Future<void> restorePreferredVolumes() {
     _restoreFuture ??= _restorePreferredVolumes();
     return _restoreFuture!;
@@ -136,6 +266,7 @@ class SoundTrackPool {
     final prefs = await _prefs;
     final raw = prefs.getString(_prefsKey);
     if (raw == null || raw.isEmpty) return;
+
     try {
       final decoded = jsonDecode(raw);
       if (decoded is Map<String, dynamic>) {
@@ -146,9 +277,7 @@ class SoundTrackPool {
           }
         }
       }
-    } catch (_) {
-      // ignore parse errors
-    }
+    } catch (_) {}
   }
 
   void _setPreferredVolumeInMemory(String key, double volume) {
@@ -159,6 +288,55 @@ class SoundTrackPool {
     final prefs = await _prefs;
     await prefs.setString(_prefsKey, jsonEncode(_preferredVolumes));
   }
+
+  Future<void> _cleanupIdleTracks(DateTime now) async {
+    if (_tracks.isEmpty) return;
+
+    final toRemove = <String>[];
+    _tracks.forEach((key, track) {
+      if (!track.enabled && now.difference(track.lastUsed) > idleTimeout) {
+        toRemove.add(key);
+      }
+    });
+
+    for (final key in toRemove) {
+      await _disposeTrack(key);
+    }
+  }
+
+  Future<void> _initAudioSessionIfNeeded() async {
+    if (_audioSessionInitialized) return;
+    _audioSessionInitialized = true;
+
+    final session = await AudioSession.instance;
+
+    await session.configure(
+      const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionCategoryOptions:
+            AVAudioSessionCategoryOptions.mixWithOthers,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+        androidAudioAttributes: AndroidAudioAttributes(
+          usage: AndroidAudioUsage.media,
+          contentType: AndroidAudioContentType.music,
+        ),
+        androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+        androidWillPauseWhenDucked: false,
+      ),
+    );
+
+    session.interruptionEventStream.listen((event) async {
+      if (event.begin) {
+        await pauseAll();
+      } else {
+        await resumeAll();
+      }
+    });
+
+    session.becomingNoisyEventStream.listen((_) async {
+      await pauseAll();
+    });
+  }
 }
 
 class _Track {
@@ -168,11 +346,13 @@ class _Track {
     required this.volume,
     required this.enabled,
     required this.lastUsed,
+    this.sourcePrepared = false,
   });
 
   final AudioPlayer player;
-  final String path;
+  String path;
   double volume;
   bool enabled;
   DateTime lastUsed;
+  bool sourcePrepared;
 }
