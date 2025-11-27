@@ -128,9 +128,14 @@ jobs:
       - name: Show downloaded files
         run: ls -R dist
 
-      # 读取版本号并创建 GitHub Release
+      # 确保切换到项目根目录，然后读取版本号
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Read version from pubspec.yaml
         run: |
+          # 确保切换到项目根目录
+          cd $GITHUB_WORKSPACE
           VERSION=$(awk -F': ' '/^version:/ {gsub("\\+", "-", $2); print $2}' pubspec.yaml)
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
