@@ -7,7 +7,7 @@ on:
 
 jobs:
   # ============================
-  # 1. Android（APK + AAB）
+  # 1. 构建 Android（APK + AAB）
   # ============================
   build-android:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
             sound_box.aab
 
   # ============================
-  # 2. macOS DMG + iOS IPA
+  # 2. 构建 macOS DMG + iOS IPA
   # ============================
   build-macos-ios:
     runs-on: macos-latest   # macOS & iOS 必须用 macOS runner
@@ -81,7 +81,7 @@ jobs:
       - name: Create sound_box.dmg
         run: |
           cd build/macos/Build/Products/Release
-          APP_BUNDLE=$(ls *.app | head -n 1)
+          APP_BUNDLE=$(find . -name "*.app" | head -n 1)
           echo "Using macOS app: $APP_BUNDLE"
           # 生成 DMG，卷标名也叫 sound_box
           hdiutil create -volname "sound_box" \
