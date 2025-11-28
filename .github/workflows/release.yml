@@ -127,6 +127,10 @@ jobs:
 
       - name: Show downloaded files
         run: ls -R dist
+      
+      # 确保切换到项目根目录，然后读取版本号
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # 读取版本号并创建 GitHub Release
       - name: Read version from pubspec.yaml
