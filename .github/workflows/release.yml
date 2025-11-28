@@ -120,14 +120,6 @@ jobs:
       contents: write   # 需要写权限创建 Release
 
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-
-      - name: Show downloaded files
-        run: ls -R dist
-      
       # 确保切换到项目根目录，然后读取版本号
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -143,13 +135,13 @@ jobs:
       - name: Show version
         run: echo "App version from pubspec.yaml = $APP_VERSION"
 
-        # 打印当前工作目录和 dist 目录中的文件
-      - name: Print current directory and check dist folder
-        run: |
-          echo "Current directory:"
-          pwd  # 打印当前工作目录
-          echo "Listing files in the current directory:"
-          ls -R  # 列出当前目录和子目录中的文件
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Show downloaded files
+        run: ls -R dist
 
       - name: Create GitHub Release & upload assets
         uses: softprops/action-gh-release@v2
