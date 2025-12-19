@@ -87,6 +87,9 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    final selection = context.watch<SoundSelectionState>();
+    final featured = selection.primary(8);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -98,35 +101,16 @@ class _HomePageState extends State<HomePage>
         ),
         child: SafeArea(
           child: Center(
-            child: OrientationBuilder(
-              builder: (context, orientation) {
-                final selection = context.watch<SoundSelectionState>();
-                final featured = selection.primary(8);
-                final isPortrait = orientation == Orientation.portrait;
-
-                return _HomeSurfaceCard(
-                  isPortrait: isPortrait,
-                  child: isPortrait
-                      ? HomePortraitLayout(
-                          nowListenable: _nowNotifier,
-                          onPrimaryAction: _openSounds,
-                          featuredSounds: featured,
-                          breathingProgress: _breathingProgress,
-                          activeBreathingIds: _activeBreathingIds,
-                          onBreathingChanged: _toggleBreathing,
-                          onSoundTap: _handleHomeSoundTap,
-                        )
-                      : HomeLandscapeLayout(
-                          nowListenable: _nowNotifier,
-                          onPrimaryAction: _openSounds,
-                          featuredSounds: featured,
-                          breathingProgress: _breathingProgress,
-                          activeBreathingIds: _activeBreathingIds,
-                          onBreathingChanged: _toggleBreathing,
-                          onSoundTap: _handleHomeSoundTap,
-                        ),
-                );
-              },
+            child: _HomeSurfaceCard(
+              child: HomePortraitLayout(
+                nowListenable: _nowNotifier,
+                onPrimaryAction: _openSounds,
+                featuredSounds: featured,
+                breathingProgress: _breathingProgress,
+                activeBreathingIds: _activeBreathingIds,
+                onBreathingChanged: _toggleBreathing,
+                onSoundTap: _handleHomeSoundTap,
+              ),
             ),
           ),
         ),
@@ -137,9 +121,8 @@ class _HomePageState extends State<HomePage>
 
 /// 统一的卡片容器，处理尺寸限制与投影。
 class _HomeSurfaceCard extends StatelessWidget {
-  const _HomeSurfaceCard({required this.isPortrait, required this.child});
+  const _HomeSurfaceCard({required this.child});
 
-  final bool isPortrait;
   final Widget child;
 
   @override
@@ -147,10 +130,7 @@ class _HomeSurfaceCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      constraints: BoxConstraints(
-        maxWidth: isPortrait ? 420 : 1000,
-        maxHeight: isPortrait ? 720 : 520,
-      ),
+      constraints: const BoxConstraints(maxWidth: 420, maxHeight: 720),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
         gradient: const LinearGradient(
