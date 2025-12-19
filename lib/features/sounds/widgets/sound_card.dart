@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sound_box/domain/sounds/white_noise_sound.dart';
 
 class SoundCard extends StatelessWidget {
@@ -76,7 +77,15 @@ class SoundCard extends StatelessWidget {
                       child: Row(
                         children: [
                           const SizedBox(width: 4),
-                          Icon(sound.icon, color: Colors.white, size: 24),
+                          SvgPicture.asset(
+                            sound.svgAsset,
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                           const SizedBox(width: 10),
                           Flexible(
                             child: Column(

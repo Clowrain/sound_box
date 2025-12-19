@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sound_box/features/home/widgets/breathing_light_icon.dart';
+import 'package:sound_box/features/home/widgets/breathingIcon/breathing_svg_icon.dart';
 
 /// 方形操作按钮，支持纯图标或图标+文字，点击后独立开启/关闭动画，仍共享同一动画值。
 class HomeSquareButton extends StatelessWidget {
   const HomeSquareButton({
     super.key,
+    this.svgAsset,
     this.icon,
     this.label,
     this.onTap,
@@ -15,6 +17,7 @@ class HomeSquareButton extends StatelessWidget {
   });
 
   final IconData? icon;
+  final String? svgAsset;
   final String? label;
   final VoidCallback? onTap;
 
@@ -75,8 +78,18 @@ class HomeSquareButton extends StatelessWidget {
   }
 
   Widget _buildIcon(Color iconColor, {double size = 24}) {
-    if (icon == null) return const SizedBox.shrink();
     final shouldAnimate = isBreathing && breathingProgress != null;
+    if (svgAsset != null) {
+      final staticColor = Colors.white24;
+      return BreathingSvgIcon(
+        asset: svgAsset!,
+        color: shouldAnimate ? iconColor : staticColor,
+        size: size,
+        isBreathing: shouldAnimate,
+        progress: breathingProgress,
+      );
+    }
+    if (icon == null) return const SizedBox.shrink();
     if (!shouldAnimate) {
       return Icon(icon, color: Colors.white24, size: size);
     }

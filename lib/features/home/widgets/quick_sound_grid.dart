@@ -54,8 +54,7 @@ class QuickSoundGrid extends StatelessWidget {
             final itemKey = item.soundId;
             final itemId = 'quick_${index}_${item.label}';
             return HomeSquareButton(
-              icon: item.icon,
-              label: item.label,
+              svgAsset: item.svgAsset,
               onTap: () => onSoundTap?.call(
                 itemKey,
                 item.path,
@@ -78,11 +77,11 @@ class QuickSoundGrid extends StatelessWidget {
     return sounds
         .map(
           (sound) => _GridItem(
-            icon: sound.icon,
             label: sound.name,
             color: sound.color,
             soundId: sound.id,
             path: sound.path,
+            svgAsset: sound.svgAsset,
           ),
         )
         .toList();
@@ -91,16 +90,16 @@ class QuickSoundGrid extends StatelessWidget {
 
 class _GridItem {
   const _GridItem({
-    required this.icon,
     required this.label,
     required this.soundId,
     required this.path,
+    required this.svgAsset,
     this.color,
   });
 
-  final IconData icon;
   final String label;
   final String soundId;
   final String path;
+  final String svgAsset;
   final Color? color;
 }

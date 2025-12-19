@@ -2,187 +2,187 @@
   {
     "name": "涓涓细雨",
     "path": "assets/sounds/variants/rain-on-leaves.ogg",
-    "icon": "cloud-rain",
+    "icon": "assets/icons/rain.svg",
     "color": "#ADD8E6"
   },
   {
     "name": "篝火冉冉",
     "path": "assets/sounds/variants/furnace.aac",
-    "icon": "fire",
+    "icon": "assets/icons/default.svg",
     "color": "#FF4500"
   },
   {
     "name": "雨打车顶",
     "path": "assets/sounds/variants/car-roof.aac",
-    "icon": "car",
+    "icon": "assets/icons/default.svg",
     "color": "#000000"
   },
   {
     "name": "雨打帐篷",
     "path": "assets/sounds/variants/tent.aac",
-    "icon": "tent",
+    "icon": "assets/icons/default.svg",
     "color": "#228B22"
   },
   {
     "name": "雨中打伞",
     "path": "assets/sounds/variants/umbrella.aac",
-    "icon": "umbrella",
+    "icon": "assets/icons/default.svg",
     "color": "#87CEEB"
   },
   {
     "name": "雨打屋顶",
     "path": "assets/sounds/variants/house-roof.aac",
-    "icon": "home",
+    "icon": "assets/icons/default.svg",
     "color": "#8B4513"
   },
   {
     "name": "阑夜虫鸣",
     "path": "assets/sounds/variants/night.aac",
-    "icon": "moon",
+    "icon": "assets/icons/default.svg",
     "color": "#191970"
   },
   {
     "name": "夏雷阵阵",
     "path": "assets/sounds/variants/thunder.aac",
-    "icon": "bolt",
+    "icon": "assets/icons/default.svg",
     "color": "#FFD700"
   },
   {
     "name": "流水潺潺",
     "path": "assets/sounds/variants/rivers_streams.aac",
-    "icon": "water-lower",
+    "icon": "assets/icons/default.svg",
     "color": "#4682B4"
   },
   {
     "name": "静谧森林",
     "path": "assets/sounds/variants/forest.aac",
-    "icon": "tree",
+    "icon": "assets/icons/default.svg",
     "color": "#228B22"
   },
   {
     "name": "沧海桑田",
     "path": "assets/sounds/variants/sea_wave.aac",
-    "icon": "water",
+    "icon": "assets/icons/default.svg",
     "color": "#1E90FF"
   },
   {
     "name": "猫儿梦呓",
     "path": "assets/sounds/variants/cat_purr.aac",
-    "icon": "cat",
+    "icon": "assets/icons/default.svg",
     "color": "#FF6347"
   },
   {
     "name": "机械键盘",
     "path": "assets/sounds/variants/keyboard.aac",
-    "icon": "keyboard",
+    "icon": "assets/icons/default.svg",
     "color": "#A9A9A9"
   },
   {
     "name": "打印机",
     "path": "assets/sounds/variants/printer.aac",
-    "icon": "print",
+    "icon": "assets/icons/default.svg",
     "color": "#808080"
   },
   {
     "name": "打字机",
     "path": "assets/sounds/variants/typewriter.aac",
-    "icon": "keyboard",
+    "icon": "assets/icons/default.svg",
     "color": "#D3D3D3"
   },
   {
     "name": "风铃",
     "path": "assets/sounds/variants/wind_chimes.aac",
-    "icon": "wind",
+    "icon": "assets/icons/default.svg",
     "color": "#B0E0E6"
   },
   {
     "name": "水滴",
     "path": "assets/sounds/variants/water_drops.aac",
-    "icon": "tint",
+    "icon": "assets/icons/default.svg",
     "color": "#00BFFF"
   },
   {
     "name": "蝉鸣",
     "path": "assets/sounds/variants/cicada.aac",
-    "icon": "bug",
+    "icon": "assets/icons/default.svg",
     "color": "#FFD700"
   },
   {
     "name": "海豚",
     "path": "assets/sounds/variants/dolphin.aac",
-    "icon": "fish",
+    "icon": "assets/icons/default.svg",
     "color": "#20B2AA"
   },
   {
     "name": "驴叫",
     "path": "assets/sounds/variants/donkey.aac",
-    "icon": "donkey",
+    "icon": "assets/icons/default.svg",
     "color": "#8B4513"
   },
   {
     "name": "鲸鱼",
     "path": "assets/sounds/variants/whale.aac",
-    "icon": "whale",
+    "icon": "assets/icons/default.svg",
     "color": "#4682B4"
   },
   {
     "name": "风扇",
     "path": "assets/sounds/variants/fan.aac",
-    "icon": "fan",
+    "icon": "assets/icons/default.svg",
     "color": "#F0E68C"
   },
   {
     "name": "飞机",
     "path": "assets/sounds/variants/airplane.aac",
-    "icon": "plane",
+    "icon": "assets/icons/default.svg",
     "color": "#00BFFF"
   },
   {
     "name": "火车",
     "path": "assets/sounds/variants/train.aac",
-    "icon": "train",
+    "icon": "assets/icons/default.svg",
     "color": "#A52A2A"
   },
   {
     "name": "钟鸣",
     "path": "assets/sounds/variants/bell.aac",
-    "icon": "bell",
+    "icon": "assets/icons/default.svg",
     "color": "#FFD700"
   },
   {
     "name": "泡泡",
     "path": "assets/sounds/variants/bubble.aac",
-    "icon": "bubble",
+    "icon": "assets/icons/default.svg",
     "color": "#B0E0E6"
   },
   {
     "name": "咖啡",
     "path": "assets/sounds/variants/cafe.aac",
-    "icon": "coffee",
+    "icon": "assets/icons/default.svg",
     "color": "#8B4513"
   },
   {
     "name": "时钟",
     "path": "assets/sounds/variants/ticking_clock.aac",
-    "icon": "clock",
+    "icon": "assets/icons/default.svg",
     "color": "#A9A9A9"
   },
   {
     "name": "铅笔",
     "path": "assets/sounds/variants/pencil.aac",
-    "icon": "pencil-alt",
+    "icon": "assets/icons/default.svg",
     "color": "#FFD700"
   },
   {
     "name": "棘轮",
     "path": "assets/sounds/variants/toy_ratchet.aac",
-    "icon": "gamepad",
+    "icon": "assets/icons/default.svg",
     "color": "#FF6347"
   },
   {
     "name": "木鱼",
     "path": "assets/sounds/variants/muyu.aac",
-    "icon": "guitar",
+    "icon": "assets/icons/default.svg",
     "color": "#A52A2A"
   }
 ]

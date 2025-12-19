@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sound_box/shared/utils/pinned_variant_resolver.dart';
 
 /// 顶部固定音色条，桌面/移动通用，支持空态提示。
@@ -82,7 +83,17 @@ class _PinnedList extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
-                    child: Icon(sound.icon, color: Colors.white, size: 16),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        sound.svgAsset,
+                        width: 16,
+                        height: 16,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
                   ),
                   Positioned(
                     right: -4,
